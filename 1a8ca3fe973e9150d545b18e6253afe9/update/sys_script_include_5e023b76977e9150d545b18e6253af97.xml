@@ -71,7 +71,7 @@ Minify.prototype = {
 		midFinder.setCapabilities(['JSMinify']);
 		var midServers = midFinder.getMIDServers();
 		if (midServers.length == 0) {
-			gs.addErrorMessage('No MID Server Available with "JSMinify" Capability ("npm install uglify-js -g")!');
+			gs.addErrorMessage('No MID Server with "JSMinify" Capability available ("npm install uglify-js -g")!');
 			return;
 		}
 		
