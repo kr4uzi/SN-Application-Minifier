@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_policy_action">
+    <sys_ui_policy_action action="INSERT_OR_UPDATE">
+        <cleared>false</cleared>
+        <disabled>ignore</disabled>
+        <field>script</field>
+        <mandatory>ignore</mandatory>
+        <sys_class_name>sys_ui_policy_action</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-10-31 15:26:40</sys_created_on>
+        <sys_id>38c1f376977e9150d545b18e6253afe8</sys_id>
+        <sys_name>script</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_ui_policy_action_38c1f376977e9150d545b18e6253afe8</sys_update_name>
+        <table>x_376096_minify_step</table>
+        <ui_policy display_value="MS - Custom Script">d2a17376977e9150d545b18e6253afd7</ui_policy>
+        <visible>true</visible>
+    </sys_ui_policy_action>
+</record_update>

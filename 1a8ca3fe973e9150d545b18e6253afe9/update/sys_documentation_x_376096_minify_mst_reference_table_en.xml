@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="reference_table" label="Reference table" language="en" table="x_376096_minify_mst">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>reference_table</element>
+            <help/>
+            <hint/>
+            <label>Reference table</label>
+            <language>en</language>
+            <name>x_376096_minify_mst</name>
+            <plural>Reference tables</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2022-10-31 15:22:20</sys_created_on>
+            <sys_name>Reference table</sys_name>
+            <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+            <sys_update_name>sys_documentation_x_376096_minify_mst_reference_table_en</sys_update_name>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

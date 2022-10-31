@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_376096_minify.WSUtil</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>WSUtil</name>
+        <script><![CDATA[var WSUtil = Class.create();
+WSUtil.prototype = {
+    initialize: function(midServer) {
+		this.mid_server = midServer;
+    },
+	
+	getScript: function (scriptName) {
+		var midScriptGr = new GlideRecord('ecc_agent_script_file');
+		midScriptGr.addQuery('name', scriptName);
+		midScriptGr.addQuery('parent.name', 'ApplicationMinifier');
+		midScriptGr.setLimit(1);
+		midScriptGr.query();
+		if (midScriptGr.next()) {
+			return midScriptGr.script.toString();
+		}
+		
+		return '';
+	},
+	
+	getEccXml: function (eccGr) {
+		if (eccGr.payload == "<see_attachment/>") {
+			var gsa = new GlideSysAttachment();
+			var attachmentGr = gsa.getAttachments(eccGr.getTableName(), eccGr.sys_id);
+			if (attachmentGr.next()) {
+				var contentStream = gsa.getContentStream(attachmentGr.sys_id);
+				return new XMLDocument2(contentStream);
+			}
+		} else {
+			var xml = new XMLDocument2();
+			xml.parseXML(eccGr.payload);
+			return xml;
+		}
+	},
+	
+	process: function (eccGr) {
+		var xml = this.getEccXml(eccGr);
+		var result = xml.getNode("//output").getTextContent();
+		var callback = JSON.parse(xml.getNode("//parameter[@name='__callback']").getAttribute('value'));
+		if (callback.script_include) {
+			var parts = callback.script_include.split('::');
+			if (parts[0] == 'Minify') {
+				var si = new x_376096_minify.Minify();
+				callback.arguments.push(result);
+				si[parts[1]].apply(si, callback.arguments);
+			}
+		}
+		
+		eccGr.processed = new GlideDateTime();
+		eccGr.update();
+	},
+	
+	execScript: function (script, params, callback) {
+		var p = params || {};
+		p.script = this.getScript(script);
+		
+		return this.execProbe(p, callback);
+	},
+	
+	execProbe: function (params, callback) {
+		var eccGr = new GlideRecord("ecc_queue");
+		eccGr.newRecord();
+		
+		eccGr.topic = "JavascriptProbe";
+		eccGr.queue = "output";
+		eccGr.state = "ready";		
+		eccGr.name = "WSUtil";
+		eccGr.source = "";
+		
+		params["skip_sensor"] = true;
+		params["__callback"] = callback;
+		
+		function replacer(key, value) {
+			if (value instanceof GlideRecord) {
+				return value.getUniqueValue()
+			} else if (value instanceof GlideElement) {
+				return value.toString();
+			}
+			
+			return value;
+		}
+		
+		var payload = new XMLDocument2();
+		payload.createElement("parameters");
+		for (var param in params) {
+			var el = payload.createElement("parameter");
+			el.setAttribute("name", param);
+			
+			var value = params[param];
+			el.setAttribute("value", typeof value == "object" ? JSON.stringify(value, replacer) : value);
+		}		
+		
+		eccGr.payload = payload.toString();
+		
+		if (this.mid_server) {
+			eccGr.agent = "mid.server." + this.mid_server;
+		}
+		
+		return eccGr.insert();
+	},
+
+    type: 'WSUtil'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-10-31 16:57:10</sys_created_on>
+        <sys_id>d5c5400b97be9150d545b18e6253affa</sys_id>
+        <sys_name>WSUtil</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_script_include_d5c5400b97be9150d545b18e6253affa</sys_update_name>
+    </sys_script_include>
+</record_update>

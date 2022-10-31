@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_376096_minify.Minify</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>Minify</name>
+        <script><![CDATA[/* global global, gs, x_376096_minify */
+/* global Class, GlideRecord, GlideScriptedExtensionPoint */
+/* eslint no-undef: "error" */
+var Minify = Class.create();
+Minify.prototype = {
+    initialize: function() {
+
+    },
+	
+	showMinifyUIAction: function (anyGr, action) {
+		if (this._shadowRecordExists(anyGr)) {
+			return false;
+		}
+		
+		var msGr = new GlideRecord('x_376096_minify_step');
+		msGr.addQuery('table', anyGr.getRecordClassName());
+		msGr.addQuery('active', true);
+		msGr.setLimit(1);
+		msGr.query();
+		return msGr.hasNext();
+	},
+	
+	showUnminifyUIAction: function (anyGr) {
+		return this._shadowRecordExists(anyGr);
+	},
+	
+	unminifyRecord: function (anyGr) {
+		var mstGr = new GlideRecord('x_376096_minify_mst');
+		mstGr.addQuery('reference_table', anyGr.getRecordClassName());
+		mstGr.addQuery('reference_sys_id', anyGr.getUniqueValue());
+		mstGr.setLimit(1);
+		mstGr.query();
+		if (mstGr.next()) {
+			var stepGr = mstGr.step.getRefRecord();
+			var recordClassName = anyGr.getRecordClassName();
+			var recordSysID = anyGr.getUniqueValue();
+			
+			var extensionPoints = new GlideScriptedExtensionPoint().getExtensions('AppMinifyUtil');
+			var i = 0;
+			for (; i < extensionPoints.length; i++) {
+				var extensionPoint = extensionPoints[i];
+				if (extensionPoint.canUpdateRecord(recordClassName, recordSysID)) {
+					extensionPoint.updateRecord(recordClassName, recordSysID, stepGr.field.toString(), mstGr.value);
+					mstGr.deleteRecord();
+					break;
+				}
+			}
+			
+			if (i == extensionPoints.length) {
+				gs.addErrorMessage('No Extension Point for "AppMinifyUtil" found. Implementation in Global Scope needed!');
+			}
+		}
+	},
+	
+	minifyRecord: function (anyGr) {
+		if (this._shadowRecordExists(anyGr)) {
+			// record already minified
+			return;
+		}
+		
+		var midFinder = new global.MIDServerFinder();
+		midFinder.setCapabilities(['JSMinify']);
+		var midServers = midFinder.getMIDServers();
+		if (midServers.length == 0) {
+			gs.addErrorMessage('No MID Server Available with "JSMinify" Capability ("npm install uglify-js -g")!');
+			return;
+		}
+		
+		var recordClassName = anyGr.getRecordClassName();
+		var recordSysID = anyGr.getUniqueValue();
+		
+		var extensionPoints = new GlideScriptedExtensionPoint().getExtensions('AppMinifyUtil');
+		var i = 0;
+		for (; i < extensionPoints.length; i++) {
+			var extensionPoint = extensionPoints[i];
+			if (extensionPoint.canUpdateRecord(recordClassName, recordSysID)) {
+				break;
+			}
+		}
+		
+		if (i == extensionPoints.length) {
+			gs.addErrorMessage('No Extension Point for <a href="nav_to.do?uri=sys_extension_point.do?sys_id=f9de28cb9772d150d545b18e6253af8d" target="_blank">AppMinifyUtil</a> found (implementation in Global Scope needed!)!');
+			return;
+		}
+								
+		var wsUtil = new x_376096_minify.WSUtil(midServers[0]);
+		
+		var msGr = new GlideRecord('x_376096_minify_step');
+		msGr.addQuery('table', recordClassName);
+		msGr.addQuery('active', true);
+		msGr.orderBy('order');
+		msGr.query();
+		
+		var processedFields = [];
+		while (msGr.next()) {
+			var field = msGr.field.toString();
+			if (processedFields.indexOf(field) > -1) {
+				continue;
+			}
+			
+			var action = msGr.action.toString();
+			if (action == 'minify') {
+				wsUtil.execScript('minify.js', { source_code: anyGr.getElement(field).toString() }, JSON.stringify({
+					script_include: 'Minify::_minifyRecord',
+					arguments: [
+						msGr.getUniqueValue(),
+						recordSysID
+					]
+				}));
+			}
+		}
+	},
+	
+	_minifyRecord: function (stepSysID, recordSysID, result) {
+		if (result) {
+			result = JSON.parse(result);
+			if (result.minified) {
+				var stepGr = new GlideRecord('x_376096_minify_step');
+				stepGr.addQuery('sys_id', stepSysID);
+				stepGr.setLimit(1);
+				stepGr.query();
+				if (stepGr.next()) {
+					var recordGr = new GlideRecord(stepGr.table);
+					recordGr.addQuery('sys_id', recordSysID);
+					recordGr.setLimit(1);
+					recordGr.query();
+					if (recordGr.next()) {
+						var recordClassName = recordGr.getRecordClassName();
+
+						var extensionPoints = new GlideScriptedExtensionPoint().getExtensions('AppMinifyUtil');
+						var i = 0;
+						for (; i < extensionPoints.length; i++) {
+							var extensionPoint = extensionPoints[i];
+							if (extensionPoint.canUpdateRecord(recordClassName, recordSysID)) {
+								// save old value in shadow table
+								var mstGr = new GlideRecord('x_376096_minify_mst');
+								mstGr.newRecord();
+								mstGr.reference_table = recordClassName;
+								mstGr.reference_sys_id = recordSysID;
+								mstGr.step = stepSysID;
+								mstGr.value = recordGr[stepGr.field].toString();
+								mstGr.insert();
+								
+								// save the new minified value in the record
+								extensionPoint.updateRecord(recordClassName, recordSysID, stepGr.field.toString(), result.minified);
+								break;
+							}
+						}
+
+						if (i == extensionPoints.length) {
+							gs.error('[AppMinify] No Extension Point for "AppMinifyUtil" found. Implementation in Global Scope needed!');
+						}
+					}
+				}
+			}
+		}
+	},
+	
+	_shadowRecordExists: function (anyGr) {
+		var mstGr = new GlideRecord('x_376096_minify_mst');
+		mstGr.addQuery('reference_table', anyGr.getRecordClassName());
+		mstGr.addQuery('reference_sys_id', anyGr.getUniqueValue());
+		mstGr.setLimit(1);
+		mstGr.query();
+		return mstGr.hasNext();
+	},
+
+    type: 'Minify'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-10-31 15:29:59</sys_created_on>
+        <sys_id>5e023b76977e9150d545b18e6253af97</sys_id>
+        <sys_name>Minify</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_script_include_5e023b76977e9150d545b18e6253af97</sys_update_name>
+    </sys_script_include>
+</record_update>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="ecc_agent_script_include">
+    <ecc_agent_script_include action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <description/>
+        <name>NodeUtil</name>
+        <script><![CDATA[var NodeUtil = Class.create();
+NodeUtil.prototype = {
+    initialize: function() {
+		this.username = ms.getConfigParameter('mid.instance.username');
+		this.password = ms.getConfigParameter('mid.instance.password');
+		this.url = ms.getConfigParameter('url');
+    },
+	
+	minify: function (sourceCode) {
+		var File = Packages.java.io.File;
+		var sourceFile = File.createTempFile('am_source', '.js');
+		try {
+			this._saveToFile(sourceFile, sourceCode);
+			
+			var proc = new ProcessExecutor('uglifyjs', '--compress', '--mangle', '--', sourceFile.getAbsolutePath());
+			proc.setTimeout(30);
+			var res = proc.exec();
+			if (res.exitCode == 0) {
+				return res.stdout;
+			} else {
+				throw new Error(res.stderr);
+			}
+		} catch (e) {
+			throw e;
+		} finally {
+			sourceFile['delete']();
+		}
+	},
+	
+	_saveToFile: function (file, content) {
+		var JString = Packages.java.lang.String;
+		var FileOutputStream = Packages.java.io.FileOutputStream;
+		
+		var os = new FileOutputStream(file);
+		try {
+			var buffer = new JString(content).getBytes();
+			os.write(buffer);
+		} finally {
+			os.close();
+		}
+	},
+	
+    type: 'NodeUtil'
+};]]></script>
+        <sys_class_name>ecc_agent_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-10-31 16:36:48</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>afc1440797be9150d545b18e6253af9b</sys_id>
+        <sys_name>NodeUtil</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>ecc_agent_script_include_afc1440797be9150d545b18e6253af9b</sys_update_name>
+    </ecc_agent_script_include>
+</record_update>

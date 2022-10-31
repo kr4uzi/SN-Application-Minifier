@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_extension_point">
+    <sys_extension_point action="INSERT_OR_UPDATE">
+        <api_name>x_376096_minify.AppMinifyUtil</api_name>
+        <description/>
+        <example><![CDATA[var AppMinifyUtil = Class.create();
+AppMinifyUtil.prototype = {
+    initialize: function() {
+		
+    },
+	
+	canUpdateRecord: function (table, sys_id) {
+		// the global version should return true!
+		return false;
+	},
+
+    updateRecord: function (table, sys_id, field, value) {
+		// This method must be overwritten in the global scope in order to allow Minify App to 
+		// apply the minifed source code to sys_metadata records
+		
+		// Example Implementation
+		var recordGr = new GlideRecord(table);
+		recordGr.addQuery('sys_id', sys_id);
+		recordGr.setLimit(1);
+		recordGr.query();
+		if (recordGr.next()) {
+			var ge = recordGr.getElement(field);
+			if (ge != null) {
+				ge.setValue(value);
+				
+				recordGr.setWorkflow(false); // dont generate an sys_update_xml
+				recordGr.update();
+			}
+		}
+	},
+
+    type: 'AppMinifyUtil'
+};]]></example>
+        <name>AppMinifyUtil</name>
+        <restrict_scope>false</restrict_scope>
+        <sys_class_name>sys_extension_point</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-10-31 19:57:34</sys_created_on>
+        <sys_id>f9de28cb9772d150d545b18e6253af8d</sys_id>
+        <sys_name>AppMinifyUtil</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_extension_point_f9de28cb9772d150d545b18e6253af8d</sys_update_name>
+    </sys_extension_point>
+</record_update>

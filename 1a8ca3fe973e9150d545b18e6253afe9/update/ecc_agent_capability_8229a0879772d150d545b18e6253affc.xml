@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="ecc_agent_capability">
+    <ecc_agent_capability action="INSERT_OR_UPDATE">
+        <capability>JSMinify</capability>
+        <capability_value>JSMinify</capability_value>
+        <sys_class_name>ecc_agent_capability</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-10-31 19:28:39</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>8229a0879772d150d545b18e6253affc</sys_id>
+        <sys_name>JSMinify</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>ecc_agent_capability_8229a0879772d150d545b18e6253affc</sys_update_name>
+        <value/>
+    </ecc_agent_capability>
+</record_update>
