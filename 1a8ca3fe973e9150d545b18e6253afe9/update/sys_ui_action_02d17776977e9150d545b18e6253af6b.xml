@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_ui_action">
     <sys_ui_action action="INSERT_OR_UPDATE">
-        <action_name/>
+        <action_name>x_376096_minify</action_name>
         <active>true</active>
         <client>false</client>
         <client_script_v2><![CDATA[function onClick(g_form) {
@@ -27,15 +27,19 @@
         <list_save_with_form_button>false</list_save_with_form_button>
         <list_style/>
         <messages/>
-        <name>Minify</name>
+        <name>Minify Record</name>
         <onclick/>
         <order>100</order>
         <script><![CDATA[/* global current, action */
-/* global x_376096_minify */
+/* global gs, x_376096_minify */
 /* eslint no-undef: "error" */
 (function (metadataGr, action) {
 	
-	new x_376096_minify.Minify().minifyRecord(metadataGr);
+	var result = new x_376096_minify.Minify().minifyRecord(metadataGr);
+	if (result.status == 'error') {
+		gs.addErrorMessage(result.message);
+	}
+	
 	action.setRedirectURL(metadataGr);
 	
 })(current, action);]]></script>
@@ -49,7 +53,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>02d17776977e9150d545b18e6253af6b</sys_id>
-        <sys_name>Minify</sys_name>
+        <sys_name>Minify Record</sys_name>
         <sys_overrides/>
         <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
         <sys_policy/>

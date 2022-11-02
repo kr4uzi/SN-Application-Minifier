@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="gsw_content_group">
+    <gsw_content_group action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <checksum>sy+4kwU6xS/4+EWLeNjmHPXOhp8=</checksum>
+        <child_can_have_roles>false</child_can_have_roles>
+        <children_layout>1</children_layout>
+        <dependent_on_contents/>
+        <dependent_on_plugins/>
+        <dependent_on_plugins_ids/>
+        <description><![CDATA[<p>The MID Server runs as a Windows service or a UNIX daemon to facilitate communication and the movement of data between a ServiceNow instance and external applications, data sources, and services. Complete the activities in this category to create a user for the MID Server, download the installation package, and validate the MID Server after installation.</p>]]></description>
+        <display_child_max_num/>
+        <done_status_text/>
+        <hide_getting_started>false</hide_getting_started>
+        <icon/>
+        <implicit_dependent_on/>
+        <implicit_plugin_dependencies/>
+        <is_root_content>false</is_root_content>
+        <order>200</order>
+        <parent display_value="AppMinify Guided Setup">05a3392797765550d545b18e6253afb5</parent>
+        <parents>05a3392797765550d545b18e6253afb5</parents>
+        <progress_text/>
+        <roles/>
+        <root_intro_frame_link/>
+        <root_parent display_value="AppMinify Guided Setup">05a3392797765550d545b18e6253afb5</root_parent>
+        <skippable>false</skippable>
+        <supports_child_content>true</supports_child_content>
+        <sys_class_name>gsw_content_group</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-02 14:18:41</sys_created_on>
+        <sys_id>665575a797765550d545b18e6253afbd</sys_id>
+        <sys_name>MID Server Installation</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>gsw_content_group_665575a797765550d545b18e6253afbd</sys_update_name>
+        <title>MID Server Installation</title>
+        <weight>1</weight>
+    </gsw_content_group>
+    <sys_translated_text action="delete_multiple" query="documentkey=665575a797765550d545b18e6253afbd"/>
+</record_update>

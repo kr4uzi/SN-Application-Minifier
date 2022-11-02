@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="gsw_content_information">
+    <gsw_content_information action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <article><![CDATA[<p>Assign the &#39;JSMinify&#39; Capability to the MID Server:</p>
+<ol style="list-style-position: inside;"><li>Open the MID Server you&#39;ve created in the previous steps</li><li>Open the Related List &#39;Capabilities&#39;</li><li>Click &#39;Edit...&#39;</li><li>Add the &#39;JSMinify&#39; to the right side (move from &#39;Collection&#39; to &#39;Capabilities List&#39;)
+<div>
+<div>
+<div> </div>
+</div>
+</div>
+</li><li>Click &#39;Save&#39;</li></ol>]]></article>
+        <best_practice_acceptable>false</best_practice_acceptable>
+        <dependent_on_contents/>
+        <dependent_on_plugins/>
+        <dependent_on_plugins_ids/>
+        <description/>
+        <embedded_help_qualifier/>
+        <end_point>ecc_agent_list.do</end_point>
+        <end_point_open_mode>3</end_point_open_mode>
+        <end_point_type>1</end_point_type>
+        <field/>
+        <filter/>
+        <filter_result/>
+        <implicit_dependent_on/>
+        <implicit_plugin_dependencies/>
+        <is_dynamic>false</is_dynamic>
+        <more_info_available>false</more_info_available>
+        <more_info_html/>
+        <order>300</order>
+        <parent display_value="MID Server Configuration">7517752b97765550d545b18e6253af4c</parent>
+        <parents>7517752b97765550d545b18e6253af4c,05a3392797765550d545b18e6253afb5</parents>
+        <plugin_id/>
+        <property_name/>
+        <property_value/>
+        <quick_startable>false</quick_startable>
+        <root_parent display_value="AppMinify Guided Setup">05a3392797765550d545b18e6253afb5</root_parent>
+        <skippable>true</skippable>
+        <supports_child_content>false</supports_child_content>
+        <sys_class_name>gsw_content_information</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-02 14:31:18</sys_created_on>
+        <sys_id>6667b52b97765550d545b18e6253af75</sys_id>
+        <sys_name>Assign the Capability</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>gsw_content_information_6667b52b97765550d545b18e6253af75</sys_update_name>
+        <table/>
+        <title>Assign the Capability</title>
+        <weight>1</weight>
+    </gsw_content_information>
+    <sys_translated_text action="delete_multiple" query="documentkey=6667b52b97765550d545b18e6253af75"/>
+</record_update>

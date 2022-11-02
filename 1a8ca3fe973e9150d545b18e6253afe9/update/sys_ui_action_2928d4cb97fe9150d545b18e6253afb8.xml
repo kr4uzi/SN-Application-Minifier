@@ -31,11 +31,15 @@
         <onclick/>
         <order>100</order>
         <script><![CDATA[/* global current, action */
-/* global x_376096_minify */
+/* global gs, x_376096_minify */
 /* eslint no-undef: "error" */
 (function (metadataGr, action) {
 	
-	new x_376096_minify.Minify().unminifyRecord(metadataGr);
+	var result = new x_376096_minify.Minify().unminifyRecord(metadataGr);
+	if (result.status == 'error') {
+		gs.addErrorMessage(result.error);
+	}
+	
 	action.setRedirectURL(metadataGr);
 	
 })(current, action);]]></script>

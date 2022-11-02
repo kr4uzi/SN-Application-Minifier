@@ -21,14 +21,14 @@
 
 }]]></script_true>
         <set_values/>
-        <short_description>MS - Custom Script</short_description>
+        <short_description>AppMinify - Step - Custom Script</short_description>
         <sys_class_name>sys_ui_policy</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-10-31 15:26:23</sys_created_on>
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>d2a17376977e9150d545b18e6253afd7</sys_id>
-        <sys_name>MS - Custom Script</sys_name>
+        <sys_name>AppMinify - Step - Custom Script</sys_name>
         <sys_overrides/>
         <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
         <sys_policy/>

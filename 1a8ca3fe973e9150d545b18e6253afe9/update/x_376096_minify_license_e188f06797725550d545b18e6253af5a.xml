@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="x_376096_minify_license">
+    <x_376096_minify_license action="INSERT_OR_UPDATE">
+        <license>/*&#13;
+Copyright (c) 2022 Markus Kraus&#13;
+&#13;
+Permission is hereby granted, free of charge, to any person obtaining a copy&#13;
+of this software and associated documentation files (the "Software"), to deal&#13;
+in the Software without restriction, including without limitation the rights&#13;
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell&#13;
+copies of the Software, and to permit persons to whom the Software is&#13;
+furnished to do so, subject to the following conditions:&#13;
+&#13;
+The above copyright notice and this permission notice shall be included in all&#13;
+copies or substantial portions of the Software.&#13;
+&#13;
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR&#13;
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,&#13;
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE&#13;
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER&#13;
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,&#13;
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE&#13;
+SOFTWARE.&#13;
+*/</license>
+        <name>MIT (JavaScript)</name>
+        <sys_class_name>x_376096_minify_license</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-02 09:53:48</sys_created_on>
+        <sys_id>e188f06797725550d545b18e6253af5a</sys_id>
+        <sys_name>MIT (JavaScript)</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>x_376096_minify_license_e188f06797725550d545b18e6253af5a</sys_update_name>
+    </x_376096_minify_license>
+</record_update>

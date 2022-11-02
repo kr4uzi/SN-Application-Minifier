@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_policy_action">
+    <sys_ui_policy_action action="INSERT_OR_UPDATE">
+        <cleared>false</cleared>
+        <disabled>ignore</disabled>
+        <field>license</field>
+        <mandatory>true</mandatory>
+        <sys_class_name>sys_ui_policy_action</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-02 07:04:17</sys_created_on>
+        <sys_id>35f1d0eb97be1550d545b18e6253afc3</sys_id>
+        <sys_name>license</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_ui_policy_action_35f1d0eb97be1550d545b18e6253afc3</sys_update_name>
+        <table>x_376096_minify_step</table>
+        <ui_policy display_value="AppMinify - Step - Show License">6bd190eb97be1550d545b18e6253af0b</ui_policy>
+        <visible>true</visible>
+    </sys_ui_policy_action>
+</record_update>

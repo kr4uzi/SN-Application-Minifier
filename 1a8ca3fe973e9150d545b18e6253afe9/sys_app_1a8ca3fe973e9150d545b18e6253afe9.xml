@@ -2,8 +2,8 @@
     <sys_app action="INSERT_OR_UPDATE">
         <active>true</active>
         <can_edit_in_studio>true</can_edit_in_studio>
-        <enforce_license>none</enforce_license>
-        <guided_setup_guid/>
+        <enforce_license>log</enforce_license>
+        <guided_setup_guid display_value="AppMinify Guided Setup">05a3392797765550d545b18e6253afb5</guided_setup_guid>
         <hide_on_ui>false</hide_on_ui>
         <installed_as_dependency>false</installed_as_dependency>
         <js_level>helsinki_es5</js_level>

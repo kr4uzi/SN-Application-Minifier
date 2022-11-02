@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="update_synch=true" db_object_id="2477802b977e1550d545b18e6253af2b" extends="sys_metadata" label="Minification License" max_length="40" name="x_376096_minify_license" type="collection">
+        <element label="License" max_length="9000" name="license" type="string"/>
+        <element label="Name" max_length="150" name="name" type="string"/>
+    </element>
+</database>

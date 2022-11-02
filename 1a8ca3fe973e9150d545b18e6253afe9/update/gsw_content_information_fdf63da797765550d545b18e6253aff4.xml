@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="gsw_content_information">
+    <gsw_content_information action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <article><![CDATA[<p>In your terminal, execute the following command:</p>
+<pre>npm install uglify-js -g</pre>]]></article>
+        <best_practice_acceptable>false</best_practice_acceptable>
+        <dependent_on_contents/>
+        <dependent_on_plugins/>
+        <dependent_on_plugins_ids/>
+        <description/>
+        <embedded_help_qualifier/>
+        <end_point/>
+        <end_point_open_mode/>
+        <end_point_type/>
+        <field/>
+        <filter/>
+        <filter_result/>
+        <implicit_dependent_on/>
+        <implicit_plugin_dependencies/>
+        <is_dynamic>false</is_dynamic>
+        <more_info_available>false</more_info_available>
+        <more_info_html/>
+        <order>200</order>
+        <parent display_value="MID Server Configuration">7517752b97765550d545b18e6253af4c</parent>
+        <parents>7517752b97765550d545b18e6253af4c,05a3392797765550d545b18e6253afb5</parents>
+        <plugin_id/>
+        <property_name/>
+        <property_value/>
+        <quick_startable>false</quick_startable>
+        <root_parent display_value="AppMinify Guided Setup">05a3392797765550d545b18e6253afb5</root_parent>
+        <skippable>false</skippable>
+        <supports_child_content>false</supports_child_content>
+        <sys_class_name>gsw_content_information</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-02 14:25:24</sys_created_on>
+        <sys_id>fdf63da797765550d545b18e6253aff4</sys_id>
+        <sys_name>Install the JavaScript Minifier</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>gsw_content_information_fdf63da797765550d545b18e6253aff4</sys_update_name>
+        <table/>
+        <title>Install the JavaScript Minifier</title>
+        <weight>1</weight>
+    </gsw_content_information>
+    <sys_translated_text action="delete_multiple" query="documentkey=fdf63da797765550d545b18e6253aff4"/>
+</record_update>

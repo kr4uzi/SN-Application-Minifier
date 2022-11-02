@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
     <element db_object_id="044f67b2977e9150d545b18e6253af6d" label="Minification Shadow Table" max_length="40" name="x_376096_minify_mst" type="collection">
-        <element dependent="reference_table" dependent_on_field="reference_table" label="Reference Sys ID" max_length="32" name="reference_sys_id" type="document_id" use_dependent_field="true"/>
+        <element dependent="reference_table" dependent_on_field="reference_table" label="Reference Sys ID" max_length="32" name="reference_sys_id" reference_cascade_rule="cascade" type="document_id" use_dependent_field="true"/>
         <element label="Reference table" max_length="80" name="reference_table" type="table_name"/>
-        <element label="Step" max_length="32" name="step" reference="x_376096_minify_step" type="reference"/>
-        <element label="Value" max_length="9000" name="value" type="string"/>
         <index name="index">
             <element name="reference_sys_id"/>
-        </index>
-        <index name="index2">
-            <element name="step"/>
         </index>
     </element>
 </database>

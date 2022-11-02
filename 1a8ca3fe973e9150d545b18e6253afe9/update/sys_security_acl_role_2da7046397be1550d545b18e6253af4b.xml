@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role">
+    <sys_security_acl_role action="INSERT_OR_UPDATE">
+        <sys_class_name>sys_security_acl_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-02 06:19:02</sys_created_on>
+        <sys_id>2da7046397be1550d545b18e6253af4b</sys_id>
+        <sys_name>x_376096_minify_license.x_376096_minify.minification_license_user</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_security_acl display_value="x_376096_minify_license">e1a7046397be1550d545b18e6253af48</sys_security_acl>
+        <sys_update_name>sys_security_acl_role_2da7046397be1550d545b18e6253af4b</sys_update_name>
+        <sys_user_role display_value="x_376096_minify.minification_license_user" name="x_376096_minify.minification_license_user">d1a7c06397be1550d545b18e6253af08</sys_user_role>
+        <transaction_id/>
+    </sys_security_acl_role>
+</record_update>

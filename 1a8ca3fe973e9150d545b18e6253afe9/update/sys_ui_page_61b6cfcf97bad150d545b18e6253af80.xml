@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script><![CDATA[addLoadEvent(function() {
+	var gdw = GlideDialogWindow.get();
+	var appSysID = gdw.getPreference('app');
+	
+	var loadingElement = gel('x_376096_loading');
+	var errorElement = gel('x_376096_error');
+    var contentElement = gel('x_376096_confirm_content');
+	
+	var ga = new GlideAjax('x_376096_minify.MinifyClient');
+	ga.addParam('sysparm_name', 'previewMinifyApp');
+	ga.addParam('app', appSysID);
+	ga.getXMLAnswer(function (answer) {
+		loadingElement.style.display = 'none';
+		var error;
+		
+		if (answer) {
+			var result = JSON.parse(answer);
+			if (result.status == 'success') {
+				contentElement.style.display = '';
+				contentElement.innerHTML = 'Do you want to minify ' + result.minify.count + ' records?';
+			} else {
+				error = result.message;
+			}
+		} else {
+			error = 'Failed to generate preview';
+		}
+		
+		if (error) {
+			errorElement.innerHTML = error;
+			errorElement.style.display = '';
+		}
+	});
+});
+
+function execCallback(type) {
+	var gdw = GlideDialogWindow.get();
+	var callback;
+	if (type == 'ok') {
+		callback = gdw.getPreference('onConfirmed');
+	} else if (type == 'cancel') {
+		callback = gdw.getPreference('onCanceled');
+	}
+	
+	var res;
+	if (typeof callback === 'function') {
+		res = callback.call();
+	}
+	
+	if (res && 'then' in res) {
+		res.then(function (promiseResult) {
+			if (promiseResult || promiseResult === undefined) {
+				gdw.destroy();
+			}
+		});
+	} else {
+		gdw.destroy();
+	}
+}]]></client_script>
+        <description/>
+        <direct>false</direct>
+        <endpoint>x_376096_minify_confirm_minify_app.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	<table border="0" width="100%" id="x_376096_confirm" style="display: none;">
+		<tr>
+			<td id="x_376096_confirm_content" style="width: 100%; vertical-align: top; min-width: 300px; padding: 0 0 20px 20px;"></td>
+		</tr>
+		<tr style="text-align: right;">
+			<td style="display: inline; text-align: right; vertical-align: bottom; white-space: nowrap;">
+				<g:dialog_buttons_ok_cancel ok_id="x_376096_confirm_ok" ok="return execCallback('ok');" cancel="return execCallback('cancel');" cancel_id="x_376096_confirm_cancel" ok_type="button" cancel_type="button" ok_text="${gs.getMessage('Continue')}"/>
+			</td>
+		</tr>
+	</table>
+	<img id="x_376096_loading" alt="${gs.getMessage('Please Wait')}" src="images/please_wait.gifx" style="margin: 6px 3px;" />
+	<p style="display: none; color: red;" id="x_376096_error"></p>
+</j:jelly>]]></html>
+        <name>confirm_minify_app</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-01 07:28:09</sys_created_on>
+        <sys_id>61b6cfcf97bad150d545b18e6253af80</sys_id>
+        <sys_name>confirm_minify_app</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_ui_page_61b6cfcf97bad150d545b18e6253af80</sys_update_name>
+    </sys_ui_page>
+</record_update>

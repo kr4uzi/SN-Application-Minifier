@@ -76,17 +76,7 @@ WSUtil.prototype = {
 		eccGr.source = "";
 		
 		params["skip_sensor"] = true;
-		params["__callback"] = callback;
-		
-		function replacer(key, value) {
-			if (value instanceof GlideRecord) {
-				return value.getUniqueValue()
-			} else if (value instanceof GlideElement) {
-				return value.toString();
-			}
-			
-			return value;
-		}
+		params["__callback"] = typeof callback === 'string' ? callback : JSON.stringify(callback, replacer);
 		
 		var payload = new XMLDocument2();
 		payload.createElement("parameters");
@@ -105,6 +95,16 @@ WSUtil.prototype = {
 		}
 		
 		return eccGr.insert();
+		
+		function replacer(key, value) {
+			if (value instanceof GlideRecord) {
+				return value.getUniqueValue();
+			} else if (value instanceof GlideElement) {
+				return value.toString();
+			}
+			
+			return value;
+		}
 	},
 
     type: 'WSUtil'

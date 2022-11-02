@@ -21,7 +21,7 @@
         </filter_condition>
         <is_rest>false</is_rest>
         <message/>
-        <name>AM - Generate Step Name</name>
+        <name>AppMinify - Step - Generate Name</name>
         <order>100</order>
         <priority>100</priority>
         <rest_method/>
@@ -41,7 +41,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>c8fea7b2977e9150d545b18e6253af8c</sys_id>
-        <sys_name>AM - Generate Step Name</sys_name>
+        <sys_name>AppMinify - Step - Generate Name</sys_name>
         <sys_overrides/>
         <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
         <sys_policy/>

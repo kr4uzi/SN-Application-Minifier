@@ -16,7 +16,7 @@
         <column_label>Table</column_label>
         <comments/>
         <create_roles/>
-        <default_value/>
+        <default_value>javascript: (typeof parent != 'undefined' &amp;&amp; parent &amp;&amp; parent.table) ? parent.table : current.target.table</default_value>
         <defaultsort/>
         <delete_roles/>
         <dependent/>

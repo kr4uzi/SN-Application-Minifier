@@ -8,9 +8,16 @@ AppMinifyUtil.prototype = {
 		
     },
 	
-	canUpdateRecord: function (table, sys_id) {
+	handles: function (table) {
 		// the global version should return true!
 		return false;
+	},
+	
+	queryRecords: function (table, encoded_query) {
+		var recordGr = new GlideRecord(table);
+		recordGr.addEncodedQuery(encoded_query);
+		recordGr.query();
+		return recordGr;
 	},
 
     updateRecord: function (table, sys_id, field, value) {

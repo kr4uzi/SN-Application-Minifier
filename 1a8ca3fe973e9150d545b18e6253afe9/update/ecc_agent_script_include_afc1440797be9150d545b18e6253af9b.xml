@@ -38,7 +38,7 @@ NodeUtil.prototype = {
 		
 		var os = new FileOutputStream(file);
 		try {
-			var buffer = new JString(content).getBytes();
+			var buffer = new JString(content || '').getBytes();
 			os.write(buffer);
 		} finally {
 			os.close();

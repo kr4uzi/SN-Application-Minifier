@@ -8,173 +8,478 @@
         <description/>
         <name>Minify</name>
         <script><![CDATA[/* global global, gs, x_376096_minify */
-/* global Class, GlideRecord, GlideScriptedExtensionPoint */
+/* global Class, GlideRecord, GlideScriptedExtensionPoint, GlideScopedEvaluator */
 /* eslint no-undef: "error" */
 var Minify = Class.create();
 Minify.prototype = {
-    initialize: function() {
+	initialize: function() {
+		this.minify_capability_name = gs.getProperty('x_376096_minify.midserver.minify_capability_name');
+	},
 
-    },
-	
-	showMinifyUIAction: function (anyGr, action) {
-		if (this._shadowRecordExists(anyGr)) {
-			return false;
+	showMinifyUIAction: function(anyGr) {
+		if (anyGr.canWrite()) {
+			var tableName = anyGr.getRecordClassName();
+			// minify is not available if the record is already minified
+			var shadowRecordExists = this._shadowRecordExists(tableName, anyGr.getUniqueValue());
+			if (!shadowRecordExists) {
+				var targetGr = new GlideRecord('x_376096_minify_target');
+				targetGr.addQuery('table', tableName);
+				targetGr.addQuery('active', true);
+				targetGr.setLimit(1);
+				targetGr.query();
+				return targetGr.hasNext();
+			}
 		}
-		
-		var msGr = new GlideRecord('x_376096_minify_step');
-		msGr.addQuery('table', anyGr.getRecordClassName());
-		msGr.addQuery('active', true);
-		msGr.setLimit(1);
-		msGr.query();
-		return msGr.hasNext();
+
+		return false;
 	},
-	
-	showUnminifyUIAction: function (anyGr) {
-		return this._shadowRecordExists(anyGr);
+
+	showUnminifyUIAction: function(anyGr) {
+		if (anyGr.canWrite()) {
+			return this._shadowRecordExists(anyGr.getRecordClassName(), anyGr.getUniqueValue());
+		}
+
+		return false;
 	},
-	
-	unminifyRecord: function (anyGr) {
+
+	unminifyRecord: function(anyGr) {
+		var result = {
+			status: 'error',
+			message: ''
+		};
+
+		var recordClassName = anyGr.getRecordClassName();
+		var recordSysID = anyGr.getUniqueValue();
+		try {
+			var recordUtil = this._getRecordUtil(recordClassName);
+			if (recordUtil) {
+				var mstGr = new GlideRecord('x_376096_minify_mst');
+				mstGr.addQuery('reference_table', recordClassName);
+				mstGr.addQuery('reference_sys_id', recordSysID);
+				mstGr.setLimit(1);
+				mstGr.query();
+				if (mstGr.next()) {
+					var shadowColumnGr = new GlideRecord('x_376096_minify_shadow_column');
+					shadowColumnGr.addQuery('shadow_reference', mstGr.sys_id);
+					shadowColumnGr.query();
+					while (shadowColumnGr.next()) {
+						recordUtil.updateRecord(recordClassName, recordSysID, shadowColumnGr.field.toString(), shadowColumnGr.value.toString());
+					}					
+
+					mstGr.deleteRecord();
+					result.status = 'success';
+				}
+			} else {
+				result.message = gs.getMessage('x_376096_minify_no_extension_point_available');
+			}
+		} catch (e) {
+			result.message += e;
+			if (e.stack) {
+				result.message += '\n' + e.stack;
+			}
+		}
+
+		return result;
+	},
+
+	unminifyApp: function(appGr) {
+		var result = {
+			status: 'error',
+			message: ''
+		};
+
 		var mstGr = new GlideRecord('x_376096_minify_mst');
-		mstGr.addQuery('reference_table', anyGr.getRecordClassName());
-		mstGr.addQuery('reference_sys_id', anyGr.getUniqueValue());
+		mstGr.addQuery('reference_table', appGr.getTableName());
+		mstGr.addQuery('reference_sys_id', appGr.getUniqueValue());
 		mstGr.setLimit(1);
 		mstGr.query();
 		if (mstGr.next()) {
-			var stepGr = mstGr.step.getRefRecord();
-			var recordClassName = anyGr.getRecordClassName();
-			var recordSysID = anyGr.getUniqueValue();
-			
-			var extensionPoints = new GlideScriptedExtensionPoint().getExtensions('AppMinifyUtil');
-			var i = 0;
-			for (; i < extensionPoints.length; i++) {
-				var extensionPoint = extensionPoints[i];
-				if (extensionPoint.canUpdateRecord(recordClassName, recordSysID)) {
-					extensionPoint.updateRecord(recordClassName, recordSysID, stepGr.field.toString(), mstGr.value);
-					mstGr.deleteRecord();
+			result.status = 'success';
+
+			var childGr = new GlideRecord('x_376096_minify_mst');
+			childGr.addJoinQuery('sys_metadata', 'reference_sys_id', 'sys_id');
+			childGr.query();
+			while (childGr.next()) {
+				try {
+					var recordTable = childGr.reference_table.toString();
+					var recordUtil = this._getRecordUtil(recordTable);
+					if (recordUtil) {
+						var stepGr = mstGr.step.getRefRecord();
+						var recordSysID = childGr.reference_sys_id.toString();
+						recordUtil.updateRecord(recordTable, recordSysID, stepGr.field.toString(), mstGr.value);
+
+						childGr.deleteRecord();
+					} else {
+						throw new Error(gs.getMessage('x_376096_minify_no_extension_point_available'));
+					}
+				} catch (e) {
+					result.status = 'error';
+					result.message += e;
+
+					if (e.stack) {
+						result.message += '\n' + e;
+					}
+
 					break;
 				}
 			}
-			
-			if (i == extensionPoints.length) {
-				gs.addErrorMessage('No Extension Point for "AppMinifyUtil" found. Implementation in Global Scope needed!');
+
+			if (result.status == 'success') {
+				mstGr.deleteRecord();
 			}
 		}
 	},
-	
-	minifyRecord: function (anyGr) {
-		if (this._shadowRecordExists(anyGr)) {
-			// record already minified
-			return;
-		}
-		
-		var midFinder = new global.MIDServerFinder();
-		midFinder.setCapabilities(['JSMinify']);
-		var midServers = midFinder.getMIDServers();
-		if (midServers.length == 0) {
-			gs.addErrorMessage('No MID Server with "JSMinify" Capability available ("npm install uglify-js -g")!');
-			return;
-		}
-		
-		var recordClassName = anyGr.getRecordClassName();
-		var recordSysID = anyGr.getUniqueValue();
-		
-		var extensionPoints = new GlideScriptedExtensionPoint().getExtensions('AppMinifyUtil');
-		var i = 0;
-		for (; i < extensionPoints.length; i++) {
-			var extensionPoint = extensionPoints[i];
-			if (extensionPoint.canUpdateRecord(recordClassName, recordSysID)) {
-				break;
+
+	minifyApp: function(appGr, previewOnly) {
+		var result = {
+			status: 'error',
+			message: '',
+			queue: []
+		};
+
+		var appTableName = appGr.getRecordClassName();
+		var appSysID = appGr.getUniqueValue();
+		if (this._shadowRecordExists(appTableName, appSysID)) {
+			result.message = gs.getMessage('x_376096_minify_already_minified');
+		} else {
+			try {
+				var recordUtils = buildRecordUtilMap.call(this);
+				if (recordUtils) {
+					var shadowRecord = new GlideRecord('x_376096_minify_mst');
+					shadowRecord.newRecord();
+					shadowRecord.reference_table = appTableName;
+					shadowRecord.reference_sys_id = appSysID;
+					var shadowSysID = shadowRecord.insert();
+					if (shadowSysID) {
+						for (var table in recordUtils) {
+							var recordUtil = recordUtils[table];
+							var recordGr = recordUtil.util.queryRecords(table, recordUtil.query);
+							while (recordGr.next()) {
+								var queue = this._minifyRecordAsync(table, recordGr.getUniqueValue(), previewOnly);
+								result.queue = result.queue.concat(queue);
+							}
+						}
+
+						result.status = 'success';
+					} else {
+						result.message = gs.getMessage('x_376096_minify_mst_insert_failed');
+					}
+				} else {
+					result.message = gs.getMessage('x_376096_minify_no_extension_point_available');
+				}
+			} catch (e) {
+				stopECC(result.queue);
+				delete result.queue;
+
+				result.message += e;
+				if (e.stack) {
+					result.message += '\n' + e.stack;
+				}
 			}
 		}
-		
-		if (i == extensionPoints.length) {
-			gs.addErrorMessage('No Extension Point for <a href="nav_to.do?uri=sys_extension_point.do?sys_id=f9de28cb9772d150d545b18e6253af8d" target="_blank">AppMinifyUtil</a> found (implementation in Global Scope needed!)!');
-			return;
+
+		return result;
+
+		function buildRecordUtilMap() {
+			var recordUtils = {};
+			var targetGr = new GlideRecord('x_376096_minify_target');
+			targetGr.addQuery('active', true);
+			targetGr.query();
+			while (targetGr.next()) {
+				var tableName = targetGr.table.toString();
+				var conditions = targetGr.conditions.toString().replace(/\^EQ$/, '');
+				// filter the records by the current app
+				conditions = conditions
+					.split('^NQ')
+					.map(function(condition) {
+					return 'sys_scope=' + appGr.sys_id + '^' + condition;
+				})
+					.join('^NQ');
+
+				var recordUtil = this._getRecordUtil(tableName);
+				if (recordUtils) {
+					recordUtils[tableName] = {
+						util: recordUtil,
+						query: conditions
+					};
+				} else {
+					return null;
+				}
+			}
+
+			return recordUtils;
 		}
-								
-		var wsUtil = new x_376096_minify.WSUtil(midServers[0]);
-		
-		var msGr = new GlideRecord('x_376096_minify_step');
-		msGr.addQuery('table', recordClassName);
-		msGr.addQuery('active', true);
-		msGr.orderBy('order');
-		msGr.query();
-		
-		var processedFields = [];
-		while (msGr.next()) {
-			var field = msGr.field.toString();
-			if (processedFields.indexOf(field) > -1) {
-				continue;
-			}
-			
-			var action = msGr.action.toString();
-			if (action == 'minify') {
-				wsUtil.execScript('minify.js', { source_code: anyGr.getElement(field).toString() }, JSON.stringify({
-					script_include: 'Minify::_minifyRecord',
-					arguments: [
-						msGr.getUniqueValue(),
-						recordSysID
-					]
-				}));
-			}
+
+		function stopECC(sysIds) {
+			var eccGr = new GlideRecord('ecc_queue');
+			eccGr.addQuery('sys_id', 'IN', sysIds);
+			eccGr.setValue('state', 'error');
+			eccGr.setValue('error_string', 'Canceled');
+			eccGr.updateMultiple();
 		}
 	},
-	
-	_minifyRecord: function (stepSysID, recordSysID, result) {
-		if (result) {
-			result = JSON.parse(result);
+
+	_minifyRecordAsync: function(recordTable, recordSysID, previewOnly, continueFromStepGr) {
+		var queue = [];
+
+		var recordUtil = this._getRecordUtil(recordTable);
+		if (recordUtil) {
+			var recordGr = recordUtil.queryRecords(recordTable, 'sys_id=' + recordSysID);
+			if (recordGr.next()) {
+				var minifyStepGr = new GlideRecord('x_376096_minify_step');
+				minifyStepGr.addQuery('table', recordTable);
+				minifyStepGr.orderBy('order');
+
+				if (previewOnly) {
+					minifyStepGr.setLimit(1);
+					minifyStepGr.query();
+					if (minifyStepGr.hasNext()) {
+						queue.push('fake_queue_id');
+					}
+				} else {
+					minifyStepGr.query();
+					
+					// only create a shadow table reference if there are actual steps
+					var shadowTableSysID;
+					while (minifyStepGr.next()) {
+						if (continueFromStepGr) {
+							// skip processing for steps have lower order
+							if (minifyStepGr.sys_id == continueFromStepGr.sys_id) {
+								// in case no order was given, make sure we dont create a inifinite loop
+								continue;
+							} else if (minifyStepGr.order < continueFromStepGr.order) {
+								continue;
+							}
+						}
+						
+						if (!shadowTableSysID) {
+							shadowTableSysID = getShadowTableSysID(recordTable, recordSysID);
+						}
+						
+						var field = minifyStepGr.field.toString();
+						var fieldValue = recordGr.getElement(field).toString();
+						saveShadowColumn(shadowTableSysID, field, fieldValue);
+
+						var action = minifyStepGr.action.toString();
+						if (action == 'minify') {
+							var queueSysID = queueForMinify.call(this, minifyStepGr.getUniqueValue(), recordSysID, fieldValue);
+							queue.push(queueSysID);
+							// any asyncronious calls have to stop processing here!
+							// the loop will be continued by the ECC-Queue callback (_minifyRecordCallback)
+							break;
+						} else if (action == 'add_license') {
+							var license = minifyStepGr.license.getRefRecord();
+							if (license.isValidRecord()) {
+								var fieldWithLicense = license.license.toString() + '\n' + fieldValue;
+								recordUtil.updateRecord(recordTable, recordSysID, minifyStepGr.field.toString(), fieldWithLicense);
+							} else {
+								throw new Error(gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record'));
+							}
+						} else if (action == 'custom') {
+							var gse = new GlideScopedEvaluator();
+							gse.putVariable('current', recordGr);
+							gse.putVariable('step', minifyStepGr);
+							gse.evaluateScript(minifyStepGr, 'script');
+						}
+					}
+				}
+			} else {
+				throw new Error(gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record'));
+			}
+		} else {
+			throw new Error(gs.getMessage('x_376096_minify_no_extension_point_available'));
+		}
+
+		return queue;
+		
+		function getShadowTableSysID(recordTable, recordSysID) {
+			var shadowTableGr = new GlideRecord('x_376096_minify_mst');
+			shadowTableGr.addQuery('reference_table', recordTable);
+			shadowTableGr.addQuery('reference_sys_id', recordSysID);
+			shadowTableGr.setLimit(1);
+			
+			var shadowTableSysID;
+			if (shadowTableGr.next()) {
+				shadowTableSysID = shadowTableGr.getUniqueValue();
+			} else {
+				shadowTableGr.newRecord();
+				shadowTableGr.reference_table = recordTable;
+				shadowTableGr.reference_sys_id = recordSysID;
+				shadowTableSysID = shadowTableGr.insert();
+			}
+			
+			if (shadowTableSysID) {
+				return shadowTableSysID;
+			}
+			
+			throw new Error(gs.getMessage('x_376096_minify_mst_insert_failed'));
+		}
+		
+		function saveShadowColumn(shadowTableSysID, field, value) {
+			var shadowColumnGr = new GlideRecord('x_376096_minify_shadow_column');
+			shadowColumnGr.addQuery('shadow_reference', shadowTableSysID);
+			shadowColumnGr.addQuery('field', field);
+			shadowColumnGr.setLimit(1);
+			if (shadowColumnGr.hasNext()) {
+				// value already saved
+			} else {
+				shadowColumnGr.newRecord();
+				shadowColumnGr.shadow_reference = shadowTableSysID;
+				shadowColumnGr.reference_sys_id = recordSysID;
+				shadowColumnGr.field = field;
+				shadowColumnGr.value = value;
+				var shadowColumnSysID = shadowColumnGr.insert();
+				if (!shadowColumnSysID) {
+					throw new Error(gs.getMessage('x_376096_minify_mst_insert_failed'));
+				}
+			}
+		}
+		
+		function queueForMinify(stepSysID, recordSysID, sourceCode) {
+			var midServer = this._getMidServer(gs.getProperty('minify_capability_name'));
+			if (midServer) {
+				var wsUtil = new x_376096_minify.WSUtil(midServer);
+				var queueSysID = wsUtil.execScript(
+					// mid server script
+					'minify.js',
+					// probe parameters
+					{
+						source_code: sourceCode
+					},
+					// callback parameters
+					{
+						script_include: 'Minify::_minifyRecordCallback',
+						arguments: [
+							stepSysID,
+							recordSysID
+						]
+					}
+				);
+
+				if (queueSysID) {
+					return queueSysID;
+				} 
+				
+				throw new Error(gs.getMessage('x_376096_minify_midserver_ecc_insert_failed'));
+			}
+			
+			throw new Error(gs.getMessage('x_376096_minify_no_midserver_available'));
+		}
+	},
+
+	minifyRecord: function(metadataGr, previewOnly) {
+		var result = {
+			status: 'error',
+			message: ''
+		};
+
+		var recordTable = metadataGr.getRecordClassName();
+		var recordSysID = metadataGr.getUniqueValue();
+
+		if (this._shadowRecordExists(recordTable, recordSysID)) {
+			result.message = gs.getMessage('x_376096_minify_already_minified');
+		} else {
+			try {
+				var recordUtil = this._getRecordUtil(recordTable);
+				if (recordUtil) {
+					var queue = this._minifyRecordAsync(recordTable, recordSysID, previewOnly);
+					if (queue) {
+						result.status = 'success';
+						result.queue = queue;
+					} else {
+						result.message = gs.getMessage('x_376096_minify_midserver_ecc_insert_failed');
+					}
+				} else {
+					result.message = gs.getMessage('x_376096_minify_no_extension_point_available');
+				}
+			} catch (e) {
+				result.message += e;
+				if (e.stack) {
+					result.message += '\n' + e.stack;
+				}
+			}
+		}
+
+		return result;
+	},
+
+	_minifyRecordCallback: function(stepSysID, recordSysID, _result) {
+		var logPrefix = '[AppMinify][_minifyRecordCallback][stepSysID=' + stepSysID + ', recordSysID=' + recordSysID + ', result=' + _result + ']\n';
+		if (_result) {
+			var result = JSON.parse(_result);
 			if (result.minified) {
 				var stepGr = new GlideRecord('x_376096_minify_step');
 				stepGr.addQuery('sys_id', stepSysID);
 				stepGr.setLimit(1);
 				stepGr.query();
 				if (stepGr.next()) {
-					var recordGr = new GlideRecord(stepGr.table);
-					recordGr.addQuery('sys_id', recordSysID);
-					recordGr.setLimit(1);
-					recordGr.query();
-					if (recordGr.next()) {
-						var recordClassName = recordGr.getRecordClassName();
+					try {
+						var tableName = stepGr.table.toString();
+						var recordUtil = this._getRecordUtil(tableName);
+						if (recordUtil) {
+							var recordGr = recordUtil.queryRecords(tableName, 'sys_id=' + recordSysID);
+							if (recordGr.hasNext()) {
+								recordUtil.updateRecord(tableName, recordSysID, stepGr.field.toString(), result.minified);
 
-						var extensionPoints = new GlideScriptedExtensionPoint().getExtensions('AppMinifyUtil');
-						var i = 0;
-						for (; i < extensionPoints.length; i++) {
-							var extensionPoint = extensionPoints[i];
-							if (extensionPoint.canUpdateRecord(recordClassName, recordSysID)) {
-								// save old value in shadow table
-								var mstGr = new GlideRecord('x_376096_minify_mst');
-								mstGr.newRecord();
-								mstGr.reference_table = recordClassName;
-								mstGr.reference_sys_id = recordSysID;
-								mstGr.step = stepSysID;
-								mstGr.value = recordGr[stepGr.field].toString();
-								mstGr.insert();
-								
-								// save the new minified value in the record
-								extensionPoint.updateRecord(recordClassName, recordSysID, stepGr.field.toString(), result.minified);
-								break;
+								var previewOnly = false;
+								var continueFromStepGr = stepGr;
+								this._minifyRecordAsync(tableName, recordSysID, previewOnly, continueFromStepGr);
 							}
+						} else {
+							gs.error(logPrefix + gs.getMessage('x_376096_minify_no_extension_point_available'));
+						}
+					} catch (e) {
+						var errorMessage = logPrefix + e;
+						if (e.stack) {
+							errorMessage += '\n' + e.stack;
 						}
 
-						if (i == extensionPoints.length) {
-							gs.error('[AppMinify] No Extension Point for "AppMinifyUtil" found. Implementation in Global Scope needed!');
-						}
+						gs.error(errorMessage);
 					}
+				} else {
+					gs.error(logPrefix + gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record'));
 				}
+			} else {
+				gs.error(logPrefix + gs.getMessage('x_376096_minify_midserver_failed_to_minify'));
 			}
+		} else {
+			gs.error(logPrefix + gs.getMessage('x_376096_minify_midserver_failed_to_minify'));
 		}
 	},
-	
-	_shadowRecordExists: function (anyGr) {
+
+	_shadowRecordExists: function(recordTable, recordSysID) {
 		var mstGr = new GlideRecord('x_376096_minify_mst');
-		mstGr.addQuery('reference_table', anyGr.getRecordClassName());
-		mstGr.addQuery('reference_sys_id', anyGr.getUniqueValue());
+		mstGr.addQuery('reference_table', recordTable);
+		mstGr.addQuery('reference_sys_id', recordSysID);
 		mstGr.setLimit(1);
 		mstGr.query();
 		return mstGr.hasNext();
 	},
 
-    type: 'Minify'
+	_getMidServer: function(capability) {
+		var midFinder = new global.MIDServerFinder();
+		midFinder.setCapabilities(['JSMinify']);
+		var midServers = midFinder.getMIDServers();
+		if (midServers.length == 0) {
+			return null;
+		}
+
+		return midServers[0];
+	},
+
+	_getRecordUtil: function(recordTable, recordSysID) {
+		var extensionPoints = new GlideScriptedExtensionPoint().getExtensions('AppMinifyUtil');
+		for (var i = 0, length = extensionPoints.length; i < length; i++) {
+			var extensionPoint = extensionPoints[i];
+			if (extensionPoint.handles(recordTable)) {
+				return extensionPoint;
+			}
+		}
+
+		return null;
+	},
+
+	type: 'Minify'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>

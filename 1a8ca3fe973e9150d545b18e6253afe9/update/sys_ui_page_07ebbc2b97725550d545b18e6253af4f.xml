@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script><![CDATA[/* global GlideDialogWindow, getMessage, gel, jslog */
+/* eslint no-undef: "error" */
+function x_376096_minify_select_application_onOK() {
+	var affectedApp = gel('x_376096_minify_select_application_affected_app').value;
+	if (affectedApp) {
+		gel('x_376096_minify_select_application_error_row').style.display = 'none';
+
+		var gdw = GlideDialogWindow.get();
+		var onSubmit = gdw.getPreference('onSubmit');
+		if (onSubmit && typeof onSubmit == 'function') {
+			try {
+				onSubmit.call(gdw, {
+					sys_id: affectedApp,
+					display_value: gel('sys_display.x_376096_minify_select_application_affected_app').value
+				});
+			} catch (e) {
+				jslog(e);
+				gdw.destroy();
+			}
+		} else {
+			gdw.destroy();
+		}
+	} else {
+		getMessage(['{0} is mandatory!', 'Affected application'], function (msgs) {
+			gel('x_376096_minify_select_application_error_row').style.display = '';
+			gel('x_376096_minify_select_application_error_message').innerHTML = msgs['{0} is mandatory!'].withValues(['"' + msgs['Affected application'] + '"']);
+		});
+	}
+}
+
+function x_376096_minify_select_application_onCancel() {
+	var gdw = GlideDialogWindow.get();
+	gdw.destroy();
+}]]></client_script>
+        <description/>
+        <direct>false</direct>
+        <endpoint>x_376096_minify_select_application.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	<g:ui_form>
+		<div class="row">
+			<div class="form-group is-required form-horizontal">
+				<div class="col-md-4 text-right">
+					<g:form_label>${gs.getMessage('Affected application')}</g:form_label>
+				</div>
+				<div class="col-md-8" >
+					<g:ui_reference label="${gs.getMessage('Application')}" name="x_376096_minify_select_application_affected_app" table="sys_app" mandatory="true" query="scopeSTARTSWITHx" />
+				</div>
+			</div>
+		</div>
+		<div class="row" style="padding-top: 15px">
+			<div class="form-group form-horizontal">
+				<div class="col-md-12 text-right">
+					<g:dialog_buttons_ok_cancel
+						ok_type     = "button"
+						ok_id       = "x_376096_select_application_ok"
+						ok          = "return x_376096_minify_select_application_onOK()"
+						ok_text     = "${gs.getMessage('Continue')}"
+						
+						cancel_type = "button"
+						cancel_id   = "x_376096_select_application_cancel"
+						cancel      = "return x_376096_minify_select_application_onCancel()"
+					/>
+				</div>
+			</div>
+		</div>
+		<div class="row" style="padding-top: 15px; display: none;" id="x_376096_minify_select_application_error_row">
+			<p class="col-md-12" id="x_376096_minify_select_application_error_message" style="color: red;"></p>
+		</div>
+	</g:ui_form>
+</j:jelly>]]></html>
+        <name>select_application</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-02 10:09:31</sys_created_on>
+        <sys_id>07ebbc2b97725550d545b18e6253af4f</sys_id>
+        <sys_name>select_application</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_ui_page_07ebbc2b97725550d545b18e6253af4f</sys_update_name>
+    </sys_ui_page>
+</record_update>
