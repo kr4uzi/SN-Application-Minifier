@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl">
+    <sys_security_acl action="DELETE">
+        <active>true</active>
+        <admin_overrides>true</admin_overrides>
+        <advanced>false</advanced>
+        <condition/>
+        <description>Default access control on x_376096_minify_shadow_column</description>
+        <name>x_376096_minify_shadow_column</name>
+        <operation display_value="write">write</operation>
+        <script/>
+        <sys_class_name>sys_security_acl</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-02 13:12:12</sys_created_on>
+        <sys_id>a136e96797365550d545b18e6253af53</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_376096_minify_shadow_column</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_security_acl_a136e96797365550d545b18e6253af53</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-11-02 13:12:12</sys_updated_on>
+        <type display_value="record">record</type>
+    </sys_security_acl>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</application>
+        <file_path/>
+        <instance_id>2ca27526dbf6491042b321c405961935</instance_id>
+        <instance_name>dev126060</instance_name>
+        <name>sys_security_acl_a136e96797365550d545b18e6253af53</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl"><sys_security_acl action="INSERT_OR_UPDATE"><active>true</active><admin_overrides>true</admin_overrides><advanced>false</advanced><condition/><description>Default access control on x_376096_minify_shadow_column</description><name>x_376096_minify_shadow_column</name><operation display_value="write">write</operation><script/><sys_class_name>sys_security_acl</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2022-11-02 13:12:12</sys_created_on><sys_id>a136e96797365550d545b18e6253af53</sys_id><sys_mod_count>0</sys_mod_count><sys_name>x_376096_minify_shadow_column</sys_name><sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package><sys_policy/><sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope><sys_update_name>sys_security_acl_a136e96797365550d545b18e6253af53</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2022-11-02 13:12:12</sys_updated_on><type display_value="record">record</type></sys_security_acl></record_update>]]></payload>
+        <payload_hash>-1291081090</payload_hash>
+        <record_name>x_376096_minify_shadow_column</record_name>
+        <reverted_from/>
+        <source>73f0a14797b2d150d545b18e6253afe9</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-02 13:12:12</sys_created_on>
+        <sys_id>2536e96797365550d545b18e6253af56</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>184387880410000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-11-02 13:12:12</sys_updated_on>
+        <type>Access Control</type>
+        <update_guid>6d36e9672936555080deed240c02e355</update_guid>
+        <update_guid_history>6d36e9672936555080deed240c02e355:-1291081090</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-05 20:28:53</sys_created_on>
+        <sys_db_object display_value="" name="sys_security_acl">sys_security_acl</sys_db_object>
+        <sys_id>417175a8bb634022861d9dfc524c6a09</sys_id>
+        <sys_metadata>a136e96797365550d545b18e6253af53</sys_metadata>
+        <sys_name>x_376096_minify_shadow_column</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_parent display_value="">a536e96797365550d545b18e6253af61</sys_parent>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_scope_delete display_value="">2591fcc8e2534017867aedae352f1461</sys_scope_delete>
+        <sys_update_name>sys_security_acl_a136e96797365550d545b18e6253af53</sys_update_name>
+        <sys_update_version display_value="sys_security_acl_a136e96797365550d545b18e6253af53">2536e96797365550d545b18e6253af56</sys_update_version>
+    </sys_metadata_delete>
+</record_update>

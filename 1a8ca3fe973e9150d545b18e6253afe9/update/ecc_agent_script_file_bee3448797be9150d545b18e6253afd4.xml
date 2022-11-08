@@ -4,12 +4,12 @@
         <checksum/>
         <description/>
         <directory>false</directory>
-        <name>minify.js</name>
+        <name>jsMinify.js</name>
         <parent display_value="ApplicationMinifier">f72904cb97be9150d545b18e6253af46</parent>
         <script>(function () {&#13;
     try {&#13;
         var util = new NodeUtil();&#13;
-        var minifiedSource = util.minify(probe.getParameter('source_code'));&#13;
+        var minifiedSource = util.jsMinify(probe.getParameter('source_code'));&#13;
         return JSON.stringify({ minified: minifiedSource });&#13;
     } catch (e) {&#13;
         return JSON.stringify({ error: e.toString() });&#13;
@@ -23,7 +23,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>bee3448797be9150d545b18e6253afd4</sys_id>
-        <sys_name>minify.js</sys_name>
+        <sys_name>jsMinify.js</sys_name>
         <sys_overrides/>
         <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
         <sys_policy/>

@@ -11,9 +11,9 @@ NodeUtil.prototype = {
 		this.url = ms.getConfigParameter('url');
     },
 	
-	minify: function (sourceCode) {
+	jsMinify: function (sourceCode) {
 		var File = Packages.java.io.File;
-		var sourceFile = File.createTempFile('am_source', '.js');
+		var sourceFile = File.createTempFile('application_minifier_js_source', '.js');
 		try {
 			this._saveToFile(sourceFile, sourceCode);
 			

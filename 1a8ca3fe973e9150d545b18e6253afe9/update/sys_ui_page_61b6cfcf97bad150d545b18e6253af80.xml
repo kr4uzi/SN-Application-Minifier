@@ -1,81 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
     <sys_ui_page action="INSERT_OR_UPDATE">
         <category>general</category>
-        <client_script><![CDATA[addLoadEvent(function() {
+        <client_script><![CDATA[/* global jslog, addLoadEvent, gel, getMessage, GlideDialogWindow, GlideAjax */
+/* eslint no-undef: "error" */
+addLoadEvent(function() {
+	var loadingElement = gel('x_376096_minify_confirm_loading');
+	var contentBlock = gel('x_376096_minify_confirm_content');
+    var contentText = gel('x_376096_minify_confirm_content_text');
+	
 	var gdw = GlideDialogWindow.get();
-	var appSysID = gdw.getPreference('app');
-	
-	var loadingElement = gel('x_376096_loading');
-	var errorElement = gel('x_376096_error');
-    var contentElement = gel('x_376096_confirm_content');
-	
+	var appSysID = gdw.getPreference('app_sys_id');
 	var ga = new GlideAjax('x_376096_minify.MinifyClient');
 	ga.addParam('sysparm_name', 'previewMinifyApp');
-	ga.addParam('app', appSysID);
+	ga.addParam('app_sys_id', appSysID);
 	ga.getXMLAnswer(function (answer) {
 		loadingElement.style.display = 'none';
-		var error;
-		
+
 		if (answer) {
 			var result = JSON.parse(answer);
 			if (result.status == 'success') {
-				contentElement.style.display = '';
-				contentElement.innerHTML = 'Do you want to minify ' + result.minify.count + ' records?';
+				var preview = result.preview;
+
+				getMessage('x_376096_minify_confirm_minify_app', function (msg) {
+					contentBlock.style.display = '';
+					contentText.innerText = msg.withValues([preview.count]);
+				});
 			} else {
-				error = result.message;
+				x_376096_minify_confirm_showError(result.message);
 			}
 		} else {
-			error = 'Failed to generate preview';
-		}
-		
-		if (error) {
-			errorElement.innerHTML = error;
-			errorElement.style.display = '';
+			getMessage('x_376096_minify_failed_to_generate_app_preview', function (msg) {
+				x_376096_minify_confirm_showError(msg);
+			});
 		}
 	});
 });
 
-function execCallback(type) {
+function x_376096_minify_confirm_showError(errorMessage) {
+	var errorMessageElement = gel('x_376096_minify_select_application_error_message');
+	errorMessageElement.innerText = errorMessage;
+	errorMessageElement.style.display = '';
+}
+
+function x_376096_minify_confirm_OK() {
 	var gdw = GlideDialogWindow.get();
-	var callback;
-	if (type == 'ok') {
-		callback = gdw.getPreference('onConfirmed');
-	} else if (type == 'cancel') {
-		callback = gdw.getPreference('onCanceled');
-	}
-	
-	var res;
-	if (typeof callback === 'function') {
-		res = callback.call();
-	}
-	
-	if (res && 'then' in res) {
-		res.then(function (promiseResult) {
-			if (promiseResult || promiseResult === undefined) {
-				gdw.destroy();
-			}
-		});
+	var onSubmit = gdw.getPreference('onSubmit');
+	if (onSubmit && typeof onSubmit == 'function') {
+		try {
+			onSubmit.call(gdw);
+		} catch (e) {
+			jslog(e);
+			gdw.destroy();
+		}
 	} else {
 		gdw.destroy();
 	}
+}
+
+function x_376096_minify_confirm_Cancel() {
+	var gdw = GlideDialogWindow.get();
+	gdw.destroy();
 }]]></client_script>
         <description/>
         <direct>false</direct>
         <endpoint>x_376096_minify_confirm_minify_app.do</endpoint>
         <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
-	<table border="0" width="100%" id="x_376096_confirm" style="display: none;">
-		<tr>
-			<td id="x_376096_confirm_content" style="width: 100%; vertical-align: top; min-width: 300px; padding: 0 0 20px 20px;"></td>
-		</tr>
-		<tr style="text-align: right;">
-			<td style="display: inline; text-align: right; vertical-align: bottom; white-space: nowrap;">
-				<g:dialog_buttons_ok_cancel ok_id="x_376096_confirm_ok" ok="return execCallback('ok');" cancel="return execCallback('cancel');" cancel_id="x_376096_confirm_cancel" ok_type="button" cancel_type="button" ok_text="${gs.getMessage('Continue')}"/>
-			</td>
-		</tr>
-	</table>
-	<img id="x_376096_loading" alt="${gs.getMessage('Please Wait')}" src="images/please_wait.gifx" style="margin: 6px 3px;" />
-	<p style="display: none; color: red;" id="x_376096_error"></p>
+	<img id="x_376096_minify_confirm_loading" alt="${gs.getMessage('Please Wait')}" src="images/please_wait.gifx" />
+	<div class="container" id="x_376096_minify_confirm_content" style="width: 100%; display: none;">
+		<div class="row">
+			<p class="col-md-12" id="x_376096_minify_confirm_content_text"></p>
+		</div>
+		<div class="row">
+			<div class="col-md-12 text-right">
+				<g:dialog_buttons_ok_cancel
+					ok_text = "${gs.getMessage('Continue')}"
+					ok_id   = "x_376096_confirm_ok"
+					ok      = "return x_376096_minify_confirm_OK();"
+					ok_type = "button"
+
+					cancel      = "return x_376096_minify_confirm_Cancel();"
+					cancel_id   = "x_376096_confirm_cancel"
+					cancel_type = "button"
+				/>
+			</div>
+		</div>
+	</div>
+	<p id="x_376096_minify_select_application_error_message" stlye="display: none;"></p>
 </j:jelly>]]></html>
         <name>confirm_minify_app</name>
         <processing_script/>

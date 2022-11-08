@@ -10,7 +10,7 @@
         <create_access_controls>true</create_access_controls>
         <delete_access>false</delete_access>
         <is_extendable>false</is_extendable>
-        <label>Minification License</label>
+        <label>License</label>
         <live_feed_enabled>false</live_feed_enabled>
         <name>x_376096_minify_license</name>
         <number_ref/>
@@ -22,7 +22,7 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-11-02 06:19:02</sys_created_on>
         <sys_id>2477802b977e1550d545b18e6253af2b</sys_id>
-        <sys_name>Minification License</sys_name>
+        <sys_name>License</sys_name>
         <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
         <sys_policy/>
         <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>

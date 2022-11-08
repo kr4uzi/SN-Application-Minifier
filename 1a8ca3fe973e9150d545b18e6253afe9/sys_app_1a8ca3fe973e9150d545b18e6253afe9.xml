@@ -13,7 +13,7 @@
         <license_definition/>
         <license_model>none</license_model>
         <logo/>
-        <menu/>
+        <menu display_value="App Minifier">039b5cc39732d150d545b18e6253af36</menu>
         <name>Application Minifier</name>
         <private>false</private>
         <restrict_table_access>false</restrict_table_access>
@@ -32,7 +32,7 @@
         <template/>
         <trackable>true</trackable>
         <uninstall_blocked>false</uninstall_blocked>
-        <user_role/>
+        <user_role display_value="x_376096_minify.app_manager" name="x_376096_minify.app_manager">575da732977e9150d545b18e6253af22</user_role>
         <vendor/>
         <vendor_prefix/>
         <version>1.0.0</version>

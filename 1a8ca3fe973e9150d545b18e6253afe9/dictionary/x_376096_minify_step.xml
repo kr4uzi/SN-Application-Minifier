@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
-    <element attributes="update_synch=true" db_object_id="9becaffe973e9150d545b18e6253afe3" extends="sys_metadata" label="Minification Step" max_length="40" name="x_376096_minify_step" type="collection">
+    <element attributes="update_synch=true" db_object_id="9becaffe973e9150d545b18e6253afe3" extends="sys_metadata" label="Step" max_length="40" name="x_376096_minify_step" type="collection">
         <element choice="1" label="Action" max_length="40" name="action" type="choice">
             <choice>
-                <element inactive_on_update="false" label="Minify" sequence="10" value="minify"/>
-                <element inactive_on_update="false" label="Add license" sequence="100" value="add_license"/>
+                <element inactive_on_update="false" label="JavaScript Minify" sequence="10" value="js_minify"/>
+                <element inactive_on_update="false" label="Add License" sequence="100" value="add_license"/>
                 <element inactive_on_update="false" label="Custom" sequence="900" value="custom"/>
             </choice>
         </element>

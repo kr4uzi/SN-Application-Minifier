@@ -17,7 +17,7 @@
             <element>action</element>
             <hint/>
             <inactive>false</inactive>
-            <label>Minify</label>
+            <label>JavaScript Minify</label>
             <language>en</language>
             <name>x_376096_minify_step</name>
             <sequence>10</sequence>
@@ -26,14 +26,14 @@
             <sys_created_on>2022-10-31 15:13:50</sys_created_on>
             <sys_domain>global</sys_domain>
             <sys_domain_path>/</sys_domain_path>
-            <value>minify</value>
+            <value>js_minify</value>
         </sys_choice>
         <sys_choice action="INSERT_OR_UPDATE">
             <dependent_value/>
             <element>action</element>
             <hint/>
             <inactive>false</inactive>
-            <label>Add license</label>
+            <label>Add License</label>
             <language>en</language>
             <name>x_376096_minify_step</name>
             <sequence>100</sequence>

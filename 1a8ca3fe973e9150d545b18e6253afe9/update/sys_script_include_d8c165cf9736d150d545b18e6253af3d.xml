@@ -51,13 +51,46 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 		return JSON.stringify(result);
 	},
 	
+	minifyApp: function () {
+		var result = {
+			status: 'error',
+			message: ''
+		};
+		
+		var appSysID = this.getParameter('app_sys_id');
+		if (appSysID) {
+			var appGr = new GlideRecordSecure('sys_app');
+			appGr.addQuery('sys_id', appSysID);
+			appGr.setLimit(1);
+			appGr.query();
+			if (appGr.next()) {
+				var previewOnly = false;
+				var minifyResult = this.minify.minifyApp(appGr, previewOnly);
+				if (minifyResult.status == 'success') {
+					result.status = 'success';
+					result.queue = {
+						count: minifyResult.queue.length
+					};
+				} else {
+					result.message = minifyResult.message;
+				}
+			} else {
+				result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
+			}
+		} else {
+			result.message = gs.getMessage('x_376096_minify_invalid_parameters');
+		}
+		
+		return JSON.stringify(result);
+	},
+	
 	previewMinifyApp: function () {
 		var result = {
 			status: 'error',
 			message: ''
 		};
 		
-		var appSysID = this.getParameter('app');
+		var appSysID = this.getParameter('app_sys_id');
 		if (appSysID) {
 			var appGr = new GlideRecordSecure('sys_app');
 			appGr.addQuery('sys_id', appSysID);
@@ -68,7 +101,7 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 				var previewResult = this.minify.minifyApp(appGr, previewOnly);
 				if (previewResult.status == 'success') {
 					result.status = 'success';
-					result.minified = {
+					result.preview = {
 						count: previewResult.queue.length
 					};
 				} else {

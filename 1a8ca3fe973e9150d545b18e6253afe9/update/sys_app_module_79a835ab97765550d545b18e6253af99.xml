@@ -13,7 +13,7 @@
         <mobile_title>Guided Setup</mobile_title>
         <mobile_view_name>Mobile</mobile_view_name>
         <name/>
-        <order>50</order>
+        <order>150</order>
         <override_menu_roles>false</override_menu_roles>
         <query>$guided_setup.do#/content/7517752b97765550d545b18e6253af4c</query>
         <report/>

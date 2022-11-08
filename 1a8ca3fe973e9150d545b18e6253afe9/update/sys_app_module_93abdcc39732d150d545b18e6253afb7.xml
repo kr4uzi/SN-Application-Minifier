@@ -15,7 +15,7 @@
         <mobile_title>Steps / Rules</mobile_title>
         <mobile_view_name>Mobile</mobile_view_name>
         <name>x_376096_minify_target</name>
-        <order>100</order>
+        <order>200</order>
         <override_menu_roles>false</override_menu_roles>
         <query/>
         <report/>
@@ -26,14 +26,14 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>93abdcc39732d150d545b18e6253afb7</sys_id>
-        <sys_name>Minification Targets</sys_name>
+        <sys_name>Table / Fields Config</sys_name>
         <sys_overrides/>
         <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
         <sys_policy/>
         <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
         <sys_update_name>sys_app_module_93abdcc39732d150d545b18e6253afb7</sys_update_name>
         <timeline_page/>
-        <title>Minification Targets</title>
+        <title>Table / Fields Config</title>
         <uncancelable>false</uncancelable>
         <view_name/>
         <window_name/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="x_376096_minify_step">
     <x_376096_minify_step action="INSERT_OR_UPDATE">
-        <action>minify</action>
+        <action>js_minify</action>
         <active>true</active>
         <field>script</field>
         <license/>
