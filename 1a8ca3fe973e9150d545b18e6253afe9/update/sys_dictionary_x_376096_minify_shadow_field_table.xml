@@ -16,7 +16,7 @@
         <column_label>Table</column_label>
         <comments/>
         <create_roles/>
-        <default_value>javascript: (typeof parent != 'undefined' &amp;&amp; parent &amp;&amp; parent.table) ? parent.table : current.shadow_record.table</default_value>
+        <default_value>javascript: typeof parent != 'undefined' &amp;&amp; parent.reference_table || current.shadow_record &amp;&amp; current.shadow_record.reference_table || ''</default_value>
         <defaultsort/>
         <delete_roles/>
         <dependent/>

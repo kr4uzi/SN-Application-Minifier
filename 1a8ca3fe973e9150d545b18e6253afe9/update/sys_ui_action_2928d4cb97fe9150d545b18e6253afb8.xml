@@ -2,7 +2,7 @@
     <sys_ui_action action="INSERT_OR_UPDATE">
         <action_name/>
         <active>true</active>
-        <client>false</client>
+        <client>true</client>
         <client_script_v2><![CDATA[function onClick(g_form) {
 
 }]]></client_script_v2>
@@ -28,21 +28,28 @@
         <list_style/>
         <messages/>
         <name>Unminify Record</name>
-        <onclick/>
+        <onclick>x_376096_minify_unminifyRecord()</onclick>
         <order>100</order>
-        <script><![CDATA[/* global current, action */
-/* global gs, x_376096_minify */
+        <script><![CDATA[/* global GlideAjax, g_form, g_navigation */
 /* eslint no-undef: "error" */
-(function (metadataGr, action) {
-	
-	var result = new x_376096_minify.Minify().unminifyRecord(metadataGr);
-	if (result.status == 'error') {
-		gs.addErrorMessage(result.message);
-	}
-	
-	action.setRedirectURL(metadataGr);
-	
-})(current, action);]]></script>
+function x_376096_minify_unminifyRecord() {
+	var ga = new GlideAjax('x_376096_minify.MinifyClient');
+	ga.addParam('sysparm_name', 'unminifyRecord');
+	ga.addParam('record_table', g_form.getTableName());
+	ga.addParam('record_sys_id', g_form.getUniqueValue());
+	ga.getXMLAnswer(function (answer) {
+		try {
+			var result = JSON.parse(answer);
+			if (result.status == 'success') {
+				g_navigation.reloadWindow();
+			} else {
+				throw new Error(result.message);
+			}
+		} catch (e) {
+			g_form.addErrorMessage(e.message);
+		}
+	});
+}]]></script>
         <show_insert>false</show_insert>
         <show_multiple_update>false</show_multiple_update>
         <show_query>false</show_query>

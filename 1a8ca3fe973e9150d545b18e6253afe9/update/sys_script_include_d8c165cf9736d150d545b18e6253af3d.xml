@@ -19,6 +19,41 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 		this.minify = new x_376096_minify.Minify();
 	},
 	
+	unminifyRecord: function () {
+		var result = {
+			'status': 'error',
+			'message': ''
+		};
+		
+		try {
+			var recordTable = this.getParameter('record_table');
+			var recordSysID = this.getParameter('record_sys_id');
+			if (recordTable && recordSysID) {
+				var recordUtil = this.minify._getRecordUtil(recordTable);
+				if (recordUtil) {
+					var recordGr = recordUtil.queryRecords(recordTable, 'sys_id=' + recordSysID, 1);
+					if (recordGr.next()) {
+						if (recordGr.canWrite()) {
+							result = this.minify.unminifyRecord(recordGr);
+						} else {
+							result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
+						}
+					} else {
+						throw new Error(gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record'));
+					}
+				} else {
+					throw new Error(gs.getMessage('x_376096_minify_no_extension_point_available'));
+				}
+			} else {
+				throw new Error(gs.getMessage('x_376096_minify_invalid_parameters'));
+			}
+		} catch (e) {
+			result.message = e.message;
+		}
+		
+		return JSON.stringify(result);
+	},
+	
 	minifyRecord: function () {
 		var result = {
 			'status': 'error',

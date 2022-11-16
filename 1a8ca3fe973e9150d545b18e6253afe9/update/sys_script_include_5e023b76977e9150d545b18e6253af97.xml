@@ -262,7 +262,7 @@ Minify.prototype = {
 
 					var field = stepGr.field.toString();
 					var fieldValue = recordGr.getElement(field).toString();
-					saveShadowField(shadowRecordSysID, field, fieldValue);
+					saveShadowField(shadowRecordSysID, config.table, field, fieldValue);
 
 					var action = stepGr.action.toString();
 					if (action == 'js_minify') {
@@ -298,6 +298,7 @@ Minify.prototype = {
 			shadowRecordGr.addQuery('reference_table', recordTable);
 			shadowRecordGr.addQuery('reference_sys_id', recordSysID);
 			shadowRecordGr.setLimit(1);
+			shadowRecordGr.query();
 			
 			var shadowRecordSysID;
 			if (shadowRecordGr.next()) {
@@ -325,7 +326,7 @@ Minify.prototype = {
 			throw new Error(gs.getMessage('x_376096_minify_shadow_record_insert_failed'));
 		}
 		
-		function saveShadowField(shadowRecordSysID, field, value) {
+		function saveShadowField(shadowRecordSysID, table, field, value) {
 			var shadowFieldGr = new GlideRecord('x_376096_minify_shadow_field');
 			shadowFieldGr.addQuery('shadow_record', shadowRecordSysID);
 			shadowFieldGr.addQuery('field', field);
@@ -336,6 +337,7 @@ Minify.prototype = {
 			} else {
 				shadowFieldGr.newRecord();
 				shadowFieldGr.shadow_record = shadowRecordSysID;
+				shadowFieldGr.table = table;
 				shadowFieldGr.field = field;
 				shadowFieldGr.value = value;
 				var shadowFieldSysID = shadowFieldGr.insert();

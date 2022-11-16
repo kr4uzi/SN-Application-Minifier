@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="x_376096_minify_step">
+    <x_376096_minify_step action="INSERT_OR_UPDATE">
+        <action>add_license</action>
+        <active>true</active>
+        <field>script</field>
+        <license display_value="MIT (JavaScript)">e188f06797725550d545b18e6253af5a</license>
+        <name>sys_ui_script.script</name>
+        <order>200</order>
+        <script/>
+        <sys_class_name>x_376096_minify_step</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-16 21:52:57</sys_created_on>
+        <sys_id>7b936f04971f9590d545b18e6253af51</sys_id>
+        <sys_name>sys_ui_script.script</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>x_376096_minify_step_7b936f04971f9590d545b18e6253af51</sys_update_name>
+        <table>sys_ui_script</table>
+        <target display_value="AppMinifier - UI Scripts">a9b76a48971b9590d545b18e6253aff9</target>
+    </x_376096_minify_step>
+</record_update>

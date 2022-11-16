@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
     <element db_object_id="4ac2a028970f1950d545b18e6253afd9" label="Shadow Field" max_length="40" name="x_376096_minify_shadow_field" type="collection">
-        <element label="Field" max_length="80" name="field" type="field_name"/>
+        <element dependent="table" dependent_on_field="table" label="Field" max_length="80" name="field" type="field_name" use_dependent_field="true"/>
         <element display="true" label="Name" max_length="120" name="name" type="string"/>
         <element label="Shadow Record" max_length="32" name="shadow_record" reference="x_376096_minify_shadow_record" reference_cascade_rule="cascade" type="reference"/>
-        <element default="javascript: (typeof parent != 'undefined' &amp;&amp; parent &amp;&amp; parent.table) ? parent.table : current.shadow_record.table" label="Table" max_length="80" name="table" type="table_name"/>
+        <element default="javascript: typeof parent != 'undefined' &amp;&amp; parent.reference_table || current.shadow_record &amp;&amp; current.shadow_record.reference_table || ''" label="Table" max_length="80" name="table" type="table_name"/>
         <element label="Value" max_length="9000" name="value" type="string"/>
         <index name="index">
             <element name="shadow_record"/>

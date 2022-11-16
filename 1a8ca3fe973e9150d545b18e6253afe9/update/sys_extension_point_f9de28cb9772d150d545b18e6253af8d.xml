@@ -13,10 +13,18 @@ AppMinifyUtil.prototype = {
 		return false;
 	},
 	
-	queryRecords: function (table, encoded_query) {
+	queryRecords: function (table, encoded_query, limit) {
 		var recordGr = new GlideRecord(table);
-		recordGr.addEncodedQuery(encoded_query);
-		recordGr.query();
+		if (encoded_query) {
+			recordGr.addEncodedQuery(encoded_query);
+			
+			if (limit) {
+				recordGr.setLimit(limit);
+			}
+			
+			recordGr.query();
+		}
+		
 		return recordGr;
 	},
 

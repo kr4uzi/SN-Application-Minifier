@@ -1,8 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
     <sys_ui_page action="INSERT_OR_UPDATE">
         <category>general</category>
-        <client_script><![CDATA[/* global GlideDialogWindow, getMessage, gel, jslog */
+        <client_script><![CDATA[/* global addLoadEvent, gel, GlideDialogWindow, getMessage, jslog */
 /* eslint no-undef: "error" */
+addLoadEvent(function () {
+	x_376096_minify_select_application_AppChanged();
+	
+	var appRefElement = gel('x_376096_minify_select_application_affected_app');
+	
+	// unfortunately the ootb event weren't registered using propert addEventListener...
+	var onChange = appRefElement.getAttribute('onchange');
+	appRefElement.setAttribute('onchange', 'x_376096_minify_select_application_AppChanged();' + onChange);
+});
+
+function x_376096_minify_select_application_AppChanged() {
+	var okButton = gel('x_376096_select_application_ok');
+	var appRefElement = gel('x_376096_minify_select_application_affected_app');
+	var appRefElementRow = appRefElement.closest('div.row');
+	
+	if (appRefElement.value) {
+		appRefElementRow.classList.add('is-filled');
+		okButton.removeAttribute('disabled');
+	} else {
+		appRefElementRow.classList.remove('is-filled');
+		okButton.setAttribute('disabled', '');
+	}
+}
+
 function x_376096_minify_select_application_onOK() {
 	var affectedApp = gel('x_376096_minify_select_application_affected_app').value;
 	if (affectedApp) {
@@ -40,6 +64,20 @@ function x_376096_minify_select_application_onCancel() {
         <endpoint>x_376096_minify_select_application.do</endpoint>
         <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	<g:evaluate>
+		var appGr = new GlideRecord('sys_app');
+		appGr.addQuery('scope', 'STARTSWITH', 'x');
+		appGr.addQuery('sys_id', gs.getCurrentApplicationId());
+		appGr.setLimit(1);
+		appGr.query();
+		
+		var appSysID = '';
+		var appDisplayValue = '';
+		if (appGr.next()) {
+			appSysID = appGr.getUniqueValue();
+			appDisplayValue = appGr.getDisplayValue();
+		}
+	</g:evaluate>
 	<g:ui_form>
 		<div class="row">
 			<div class="form-group is-required form-horizontal">
@@ -47,7 +85,10 @@ function x_376096_minify_select_application_onCancel() {
 					<g:form_label>${gs.getMessage('Affected application')}</g:form_label>
 				</div>
 				<div class="col-md-8" >
-					<g:ui_reference label="${gs.getMessage('Application')}" name="x_376096_minify_select_application_affected_app" table="sys_app" mandatory="true" query="scopeSTARTSWITHx" />
+					<g:ui_reference name="x_376096_minify_select_application_affected_app"
+						table="sys_app" query="scopeSTARTSWITHx"
+						value="${JS:appSysID}" displayvalue="${JS:appDisplayValue}"
+					/>
 				</div>
 			</div>
 		</div>

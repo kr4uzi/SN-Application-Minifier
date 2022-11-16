@@ -3,16 +3,16 @@
         <active>true</active>
         <conditions/>
         <description/>
-        <short_description>AppMinifier - Script Includes</short_description>
+        <short_description>AppMinifier - Business Rules</short_description>
         <sys_class_name>x_376096_minify_target</sys_class_name>
         <sys_created_by>admin</sys_created_by>
-        <sys_created_on>2022-11-01 17:02:20</sys_created_on>
-        <sys_id>9d31951797f21550d545b18e6253af6e</sys_id>
-        <sys_name>AppMinifier - Script Includes</sys_name>
+        <sys_created_on>2022-11-16 17:37:34</sys_created_on>
+        <sys_id>cf19aec8971b9590d545b18e6253af70</sys_id>
+        <sys_name>AppMinifier - Business Rules</sys_name>
         <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
         <sys_policy/>
         <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
-        <sys_update_name>x_376096_minify_target_9d31951797f21550d545b18e6253af6e</sys_update_name>
-        <table>sys_script_include</table>
+        <sys_update_name>x_376096_minify_target_cf19aec8971b9590d545b18e6253af70</sys_update_name>
+        <table>sys_script</table>
     </x_376096_minify_target>
 </record_update>
