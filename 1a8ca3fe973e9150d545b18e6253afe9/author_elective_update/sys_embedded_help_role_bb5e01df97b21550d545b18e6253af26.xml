@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_embedded_help_role">
+    <sys_embedded_help_role action="DELETE">
+        <order>1000</order>
+        <role display_value="">f35e01df97b21550d545b18e6253af25</role>
+        <sys_class_name>sys_embedded_help_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-01 16:49:34</sys_created_on>
+        <sys_id>bb5e01df97b21550d545b18e6253af26</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>f35e01df97b21550d545b18e6253af25</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_embedded_help_role_bb5e01df97b21550d545b18e6253af26</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-11-01 16:49:34</sys_updated_on>
+    </sys_embedded_help_role>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</application>
+        <file_path/>
+        <instance_id>2ca27526dbf6491042b321c405961935</instance_id>
+        <instance_name>dev126060</instance_name>
+        <name>sys_embedded_help_role_bb5e01df97b21550d545b18e6253af26</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_embedded_help_role"><sys_embedded_help_role action="INSERT_OR_UPDATE"><order>1000</order><role display_value="">f35e01df97b21550d545b18e6253af25</role><sys_class_name>sys_embedded_help_role</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2022-11-01 16:49:34</sys_created_on><sys_id>bb5e01df97b21550d545b18e6253af26</sys_id><sys_mod_count>0</sys_mod_count><sys_name>f35e01df97b21550d545b18e6253af25</sys_name><sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package><sys_policy/><sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope><sys_update_name>sys_embedded_help_role_bb5e01df97b21550d545b18e6253af26</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2022-11-01 16:49:34</sys_updated_on></sys_embedded_help_role></record_update>]]></payload>
+        <payload_hash>1595082236</payload_hash>
+        <record_name>f35e01df97b21550d545b18e6253af25</record_name>
+        <reverted_from/>
+        <source>8a31c4328702111021d6fcc5dabb35f2</source>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by/>
+        <sys_created_on>2022-09-23 15:08:25</sys_created_on>
+        <sys_id>46c6f1549757d590d545b18e6253af8f</sys_id>
+        <sys_mod_count/>
+        <sys_recorded_at>1836ae486280000000</sys_recorded_at>
+        <sys_updated_by/>
+        <sys_updated_on/>
+        <type>Embedded Help Role Priority</type>
+        <update_guid>06c6f1548257d590c694cc0bc25cd88f</update_guid>
+        <update_guid_history>06c6f1548257d590c694cc0bc25cd88f:1595082236</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-17 08:35:44</sys_created_on>
+        <sys_db_object display_value="" name="sys_embedded_help_role">sys_embedded_help_role</sys_db_object>
+        <sys_id>0126f13fcb964fe09c83048f81eeca40</sys_id>
+        <sys_metadata>bb5e01df97b21550d545b18e6253af26</sys_metadata>
+        <sys_name>f35e01df97b21550d545b18e6253af25</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_scope_delete display_value="">2591fcc8e2534017867aedae352f1461</sys_scope_delete>
+        <sys_update_name>sys_embedded_help_role_bb5e01df97b21550d545b18e6253af26</sys_update_name>
+        <sys_update_version display_value="sys_embedded_help_role_bb5e01df97b21550d545b18e6253af26">46c6f1549757d590d545b18e6253af8f</sys_update_version>
+    </sys_metadata_delete>
+</record_update>

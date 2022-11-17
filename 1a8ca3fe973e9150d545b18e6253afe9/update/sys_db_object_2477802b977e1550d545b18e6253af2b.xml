@@ -28,7 +28,7 @@
         <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
         <sys_update_name>sys_db_object_2477802b977e1550d545b18e6253af2b</sys_update_name>
         <update_access>false</update_access>
-        <user_role display_value="x_376096_minify.minification_license_user" name="x_376096_minify.minification_license_user">d1a7c06397be1550d545b18e6253af08</user_role>
+        <user_role display_value="x_376096_minify.app_manager" name="x_376096_minify.app_manager">575da732977e9150d545b18e6253af22</user_role>
         <ws_access>true</ws_access>
     </sys_db_object>
 </record_update>

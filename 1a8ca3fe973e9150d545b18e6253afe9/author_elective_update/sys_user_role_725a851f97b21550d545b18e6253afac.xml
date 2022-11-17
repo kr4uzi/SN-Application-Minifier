@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_user_role">
+    <sys_user_role action="DELETE">
+        <assignable_by/>
+        <can_delegate>true</can_delegate>
+        <description/>
+        <elevated_privilege>false</elevated_privilege>
+        <grantable>true</grantable>
+        <includes_roles/>
+        <name>x_376096_minify.minification_exemption_user</name>
+        <requires_subscription>-1</requires_subscription>
+        <scoped_admin>false</scoped_admin>
+        <suffix>minification_exemption_user</suffix>
+        <sys_class_name>sys_user_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-01 16:32:01</sys_created_on>
+        <sys_id>725a851f97b21550d545b18e6253afac</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_376096_minify.minification_exemption_user</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_user_role_725a851f97b21550d545b18e6253afac</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-11-01 16:32:01</sys_updated_on>
+    </sys_user_role>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</application>
+        <file_path/>
+        <instance_id>2ca27526dbf6491042b321c405961935</instance_id>
+        <instance_name>dev126060</instance_name>
+        <name>sys_user_role_725a851f97b21550d545b18e6253afac</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_user_role"><sys_user_role action="INSERT_OR_UPDATE"><assignable_by/><can_delegate>true</can_delegate><description/><elevated_privilege>false</elevated_privilege><grantable>true</grantable><includes_roles/><name>x_376096_minify.minification_exemption_user</name><requires_subscription>-1</requires_subscription><scoped_admin>false</scoped_admin><suffix>minification_exemption_user</suffix><sys_class_name>sys_user_role</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2022-11-01 16:32:01</sys_created_on><sys_id>725a851f97b21550d545b18e6253afac</sys_id><sys_mod_count>0</sys_mod_count><sys_name>x_376096_minify.minification_exemption_user</sys_name><sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package><sys_policy/><sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope><sys_update_name>sys_user_role_725a851f97b21550d545b18e6253afac</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2022-11-01 16:32:01</sys_updated_on></sys_user_role></record_update>]]></payload>
+        <payload_hash>555774814</payload_hash>
+        <record_name>x_376096_minify.minification_exemption_user</record_name>
+        <reverted_from/>
+        <source>73f0a14797b2d150d545b18e6253afe9</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-01 16:32:01</sys_created_on>
+        <sys_id>725a851f97b21550d545b18e6253afb0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>184340915310000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-11-01 16:32:01</sys_updated_on>
+        <type>Role</type>
+        <update_guid>7a5a851f20b21550281acfdf6d36ddaf</update_guid>
+        <update_guid_history>7a5a851f20b21550281acfdf6d36ddaf:555774814</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="x_376096_minify.minification_exemption_user">f0d675549757d590d545b18e6253af51</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-17 08:35:55</sys_created_on>
+        <sys_db_object display_value="" name="sys_user_role">sys_user_role</sys_db_object>
+        <sys_id>09b28c6a852d4a15a8503d54e7e1d9e9</sys_id>
+        <sys_metadata>725a851f97b21550d545b18e6253afac</sys_metadata>
+        <sys_name>x_376096_minify.minification_exemption_user</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_scope_delete display_value="">2591fcc8e2534017867aedae352f1461</sys_scope_delete>
+        <sys_update_name>sys_user_role_725a851f97b21550d545b18e6253afac</sys_update_name>
+        <sys_update_version display_value="sys_user_role_725a851f97b21550d545b18e6253afac">725a851f97b21550d545b18e6253afb0</sys_update_version>
+    </sys_metadata_delete>
+</record_update>
