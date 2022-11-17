@@ -16,7 +16,17 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 	initialize: function () {
 		global.AbstractAjaxProcessor.prototype.initialize.apply(this, arguments);
 		
-		this.minify = new x_376096_minify.Minify();
+		this.error_message = '';
+		try {
+			this.minify = new x_376096_minify.Minify();
+		} catch (e) {
+			this.minify = null;
+			
+			this.error_message = e.message;
+			if (e.stack) {
+				this.error_message += '\n' + e.stack;
+			}
+		}
 	},
 	
 	unminifyRecord: function () {
@@ -39,16 +49,20 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 							result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
 						}
 					} else {
-						throw new Error(gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record'));
+						result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
 					}
 				} else {
-					throw new Error(gs.getMessage('x_376096_minify_no_extension_point_available'));
+					result.message = gs.getMessage('x_376096_minify_no_extension_point_available');
 				}
 			} else {
-				throw new Error(gs.getMessage('x_376096_minify_invalid_parameters'));
+				result.message = gs.getMessage('x_376096_minify_invalid_parameters');
 			}
 		} catch (e) {
+			result.status = 'error';
 			result.message = e.message;
+			if (e.stack) {
+				result.message += '\n' + e.stack;
+			}
 		}
 		
 		return JSON.stringify(result);
@@ -60,27 +74,35 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 			'message': ''
 		};
 		
-		var recordTable = this.getParameter('record_table');
-		var recordSysID = this.getParameter('record_sys_id');
-		if (recordTable && recordSysID) {
-			var recordUtil = this.minify._getRecordUtil(recordTable);
-			if (recordUtil) {
-				var recordGr = recordUtil.queryRecord(recordTable, 'sys_id=' + recordSysID);
-				if (recordGr.next()) {
-					if (recordGr.canWrite()) {
-						var previewOnly = false;
-						result = this.minify.minifyRecord(recordGr, previewOnly);
+		try {
+			var recordTable = this.getParameter('record_table');
+			var recordSysID = this.getParameter('record_sys_id');
+			if (recordTable && recordSysID) {
+				var recordUtil = this.minify._getRecordUtil(recordTable);
+				if (recordUtil) {
+					var recordGr = recordUtil.queryRecord(recordTable, 'sys_id=' + recordSysID);
+					if (recordGr.next()) {
+						if (recordGr.canWrite()) {
+							var previewOnly = false;
+							result = this.minify.minifyRecord(recordGr, previewOnly);
+						} else {
+							result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
+						}
 					} else {
 						result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
 					}
 				} else {
-					result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
+					result.message = gs.getMessage('x_376096_minify_no_extension_point_available');
 				}
 			} else {
-				result.message = gs.getMessage('x_376096_minify_no_extension_point_available');
+				result.message = gs.getMessage('x_376096_minify_invalid_parameters');
 			}
-		} else {
-			result.message = gs.getMessage('x_376096_minify_invalid_parameters');
+		} catch (e) {
+			result.status = 'error';
+			result.message += e.message;
+			if (e.stack) {
+				result.message += '\n' + e.stack;
+			}
 		}
 		
 		return JSON.stringify(result);
@@ -92,28 +114,40 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 			message: ''
 		};
 		
-		var appSysID = this.getParameter('app_sys_id');
-		if (appSysID) {
-			var appGr = new GlideRecordSecure('sys_app');
-			appGr.addQuery('sys_id', appSysID);
-			appGr.setLimit(1);
-			appGr.query();
-			if (appGr.next()) {
-				var previewOnly = false;
-				var minifyResult = this.minify.minifyApp(appGr, previewOnly);
-				if (minifyResult.status == 'success') {
-					result.status = 'success';
-					result.queue = {
-						count: minifyResult.queue.length
-					};
+		try {
+			var appSysID = this.getParameter('app_sys_id');
+			if (appSysID) {
+				var appGr = new GlideRecordSecure('sys_app');
+				appGr.addQuery('sys_id', appSysID);
+				appGr.setLimit(1);
+				appGr.query();
+				if (appGr.next()) {
+					if (appGr.canWrite()) {
+						var previewOnly = false;
+						var minifyResult = this.minify.minifyApp(appGr, previewOnly);
+						if (minifyResult.status == 'success') {
+							result.status = 'success';
+							result.queue = {
+								count: minifyResult.queue.length
+							};
+						} else {
+							result.message = minifyResult.message;
+						}
+					} else {
+						result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
+					}
 				} else {
-					result.message = minifyResult.message;
+					result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
 				}
 			} else {
-				result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
+				result.message = gs.getMessage('x_376096_minify_invalid_parameters');
 			}
-		} else {
-			result.message = gs.getMessage('x_376096_minify_invalid_parameters');
+		} catch (e) {
+			result.status = 'error';
+			result.message += e.message;
+			if (e.stack) {
+				result.message += '\n' + e.stack;
+			}
 		}
 		
 		return JSON.stringify(result);

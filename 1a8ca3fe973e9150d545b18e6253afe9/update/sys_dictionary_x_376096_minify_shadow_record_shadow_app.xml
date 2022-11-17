@@ -41,7 +41,7 @@
         <read_only>false</read_only>
         <read_roles/>
         <reference display_value="" name="x_376096_minify_shadow_application">x_376096_minify_shadow_application</reference>
-        <reference_cascade_rule>cascade</reference_cascade_rule>
+        <reference_cascade_rule/>
         <reference_floats>false</reference_floats>
         <reference_key/>
         <reference_qual/>

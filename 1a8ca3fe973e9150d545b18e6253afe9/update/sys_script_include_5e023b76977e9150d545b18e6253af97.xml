@@ -14,6 +14,7 @@ var Minify = Class.create();
 Minify.prototype = {
 	initialize: function() {
 		this.minify_capability_name = gs.getProperty('x_376096_minify.midserver.minify_capability_name');
+		this.ext_cache = {};
 	},
 
 	showMinifyUIAction: function(anyGr) {
@@ -73,6 +74,8 @@ Minify.prototype = {
 
 				shadowRecord.deleteRecord();
 				result.status = 'success';
+			} else {
+				result.message = gs.getMessage('x_376096_minify_invalid_parameters');
 			}
 		} catch (e) {
 			result.message += e;
@@ -90,32 +93,23 @@ Minify.prototype = {
 			message: ''
 		};
 
-		var appSysID = appGr.getUniqueValue();
 		var shadowAppGr = new GlideRecord('x_376096_minify_shadow_application');
-		shadowAppGr.addQuery('reference_table', appGr.getTableName());
-		shadowAppGr.addQuery('reference_sys_id', appSysID);
+		shadowAppGr.addQuery('app', appGr.sys_id);
 		shadowAppGr.setLimit(1);
 		shadowAppGr.query();
 		if (shadowAppGr.next()) {
 			result.status = 'success';
 
 			var shadowRecordGr = new GlideRecord('x_376096_minify_shadow_record');
-			shadowRecordGr.addQuery('shadow_app', appSysID);
+			shadowRecordGr.addQuery('shadow_app', shadowAppGr.sys_id);
 			shadowRecordGr.query();
 			while (shadowRecordGr.next()) {
 				try {
-					var recordSysID = shadowRecordGr.reference_sys_id.toString();
-					var recordTable = shadowRecordGr.reference_table.toString();
-					var recordUtil = this._getRecordUtil(recordTable);
-					var shadowFieldGr = new GlideRecord('x_376096_minify_shadow_field');
-					shadowFieldGr.addQuery('shadow_record', shadowRecordGr.sys_id);
-					shadowFieldGr.query();
-					while (shadowFieldGr.next()) {
-						recordUtil.updateRecord(recordTable, recordSysID, shadowFieldGr.field.toString(), shadowFieldGr.value.toString());
-						shadowFieldGr.deleteRecord();
+					var recordGr = shadowRecordGr.reference_sys_id.getRefRecord();
+					var recordResult = this.unminifyRecord(recordGr);
+					if (recordResult.status != 'success') {
+						throw new Error(recordResult.message);
 					}
-
-					shadowRecordGr.deleteRecord();
 				} catch (e) {
 					result.status = 'error';
 					result.message += e;
@@ -131,6 +125,8 @@ Minify.prototype = {
 			if (result.status == 'success') {
 				shadowAppGr.deleteRecord();
 			}
+		} else {
+			result.message = gs.getMessage('x_376096_minify_invalid_parameters');
 		}
 		
 		return result;
@@ -243,10 +239,12 @@ Minify.prototype = {
 			} else {
 				stepGr.query();
 
-				// only create a shadow table reference if there are actual steps
+				var isFirstStep = true;
 				var shadowRecordSysID;
-				while (stepGr.next()) {
+				while (stepGr.next()) {					
 					if (config.continue_from) {
+						isFirstStep = false;
+						
 						// skip processing for steps have lower order
 						if (stepGr.sys_id == config.continue_from.sys_id) {
 							// in case no order was given, make sure we dont create a inifinite loop
@@ -255,11 +253,44 @@ Minify.prototype = {
 							continue;
 						}
 					}
-
-					if (!shadowRecordSysID) {
-						shadowRecordSysID = saveShadowRecord(config.table, config.sys_id, config.shadow_app);
+					
+					if (isFirstStep) {
+						var existingShadowRecordGr = getExistingShadowRecord(config.table, config.sys_id);
+						if (config.shadow_app) {
+							if (existingShadowRecordGr) {
+								existingShadowRecordGr.shadow_app = config.shadow_app;
+								var updateResult = existingShadowRecordGr.update();
+								if (updateResult == null) {
+									throw new Error(gs.getMessage('x_376096_minify_shadow_record_update_failed'));
+								}
+								
+								shadowRecordSysID = existingShadowRecordGr.getUniqueValue();
+								break;
+							} else {
+								shadowRecordSysID = createShadowRecord(config.table, config.sys_id, config.shadow_app);
+							}
+						} else {
+							if (existingShadowRecordGr) {
+								// in the very first step we must not already have a minified record
+								// (except in 'Minify App' Action, which is handled above)
+								throw new Error(gs.getMessage('x_376096_minify_already_minified'));
+							} else {
+								shadowRecordSysID = createShadowRecord(config.table, config.sys_id);
+							}
+						}
+					} else {
+						// if not in the first step, a shadow record must have already been inserted!
+						shadowRecordSysID = shadowRecordSysID || (function () {
+							var existingShadowRecordGr = getExistingShadowRecord(config.table, config.sys_id);
+							if (existingShadowRecordGr) {
+								return existingShadowRecordGr.getUniqueValue();
+							}
+							
+							throw new Error(gs.getMessage('Unexpected: At this point a shadow record should already exist.'));
+						})();
 					}
 
+					isFirstStep = false;
 					var field = stepGr.field.toString();
 					var fieldValue = recordGr.getElement(field).toString();
 					saveShadowField(shadowRecordSysID, config.table, field, fieldValue);
@@ -293,17 +324,40 @@ Minify.prototype = {
 
 		return queue;
 		
-		function saveShadowRecord(recordTable, recordSysID, shadowAppSysID) {
+		function getExistingShadowRecord(recordTable, recordSysID) {
 			var shadowRecordGr = new GlideRecord('x_376096_minify_shadow_record');
 			shadowRecordGr.addQuery('reference_table', recordTable);
 			shadowRecordGr.addQuery('reference_sys_id', recordSysID);
 			shadowRecordGr.setLimit(1);
 			shadowRecordGr.query();
-			
-			var shadowRecordSysID;
 			if (shadowRecordGr.next()) {
-				if (shadowAppSysID && shadowRecordGr.shadow_app != shadowAppSysID) {
-					shadowRecordGr.shadow_record = shadowAppSysID;
+				return shadowRecordGr;
+			}
+			
+			return null;
+		}
+		
+		function createShadowRecord(recordTable, recordSysID, shadowAppSysID) {
+			var shadowRecordGr = new GlideRecord('x_376096_minify_shadow_record');
+			shadowRecordGr.newRecord();
+			shadowRecordGr.reference_table = recordTable;
+			shadowRecordGr.reference_sys_id = recordSysID;
+			shadowRecordGr.shadow_app = shadowAppSysID;
+			var shadowRecordSysID = shadowRecordGr.insert();
+			if (shadowRecordSysID) {
+				return shadowRecordSysID;
+			}
+			
+			throw new Error(gs.getMessage('x_376096_minify_shadow_record_insert_failed'));
+		}
+		
+		function saveShadowRecord(recordTable, recordSysID, shadowAppSysID) {
+			var shadowRecordSysID;
+			var shadowRecordGr = getExistingShadowRecord(recordTable, recordSysID);
+			if (shadowRecordGr) {
+				if (shadowAppSysID && !shadowRecordGr.shadow_app) {
+					// the record was manually minified previous to the (whole) application minification
+					shadowRecordGr.shadow_app = shadowAppSysID;
 					var updateResult = shadowRecordGr.update();
 					if (updateResult == null) {
 						throw new Error(gs.getMessage('x_376096_minify_shadow_record_update_failed'));
@@ -312,6 +366,7 @@ Minify.prototype = {
 				
 				shadowRecordSysID = shadowRecordGr.getUniqueValue();
 			} else {
+				shadowRecordGr = new GlideRecord('x_376096_minify_shadow_record');
 				shadowRecordGr.newRecord();
 				shadowRecordGr.reference_table = recordTable;
 				shadowRecordGr.reference_sys_id = recordSysID;
@@ -485,11 +540,16 @@ Minify.prototype = {
 		return midServers[0];
 	},
 
-	_getRecordUtil: function(recordTable, recordSysID) {
+	_getRecordUtil: function(recordTable) {
+		if (recordTable in this.ext_cache) {
+			return this.ext_cache[recordTable];
+		}
+		
 		var extensionPoints = new GlideScriptedExtensionPoint().getExtensions('AppMinifyUtil');
 		for (var i = 0, length = extensionPoints.length; i < length; i++) {
 			var extensionPoint = extensionPoints[i];
 			if (extensionPoint.handles(recordTable)) {
+				this.ext_cache[recordTable] = extensionPoint;
 				return extensionPoint;
 			}
 		}
