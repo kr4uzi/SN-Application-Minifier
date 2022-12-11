@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_scope_privilege">
+    <sys_scope_privilege action="DELETE">
+        <operation>create</operation>
+        <source_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</source_scope>
+        <status>allowed</status>
+        <sys_class_name>sys_scope_privilege</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-10-31 18:34:19</sys_created_on>
+        <sys_id>b4cc18879732d150d545b18e6253af96</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ecc_queue</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_scope_privilege_b4cc18879732d150d545b18e6253af96</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-10-31 18:34:19</sys_updated_on>
+        <target_name>ecc_queue</target_name>
+        <target_scope display_value="Global">global</target_scope>
+        <target_type>sys_db_object</target_type>
+    </sys_scope_privilege>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</application>
+        <file_path/>
+        <instance_id>2ca27526dbf6491042b321c405961935</instance_id>
+        <instance_name>dev126060</instance_name>
+        <name>sys_scope_privilege_b4cc18879732d150d545b18e6253af96</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_scope_privilege"><sys_scope_privilege action="INSERT_OR_UPDATE"><operation>create</operation><source_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</source_scope><status>allowed</status><sys_class_name>sys_scope_privilege</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2022-10-31 18:34:19</sys_created_on><sys_id>b4cc18879732d150d545b18e6253af96</sys_id><sys_mod_count>0</sys_mod_count><sys_name>ecc_queue</sys_name><sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package><sys_policy/><sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope><sys_update_name>sys_scope_privilege_b4cc18879732d150d545b18e6253af96</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2022-10-31 18:34:19</sys_updated_on><target_name>ecc_queue</target_name><target_scope display_value="Global">global</target_scope><target_type>sys_db_object</target_type></sys_scope_privilege></record_update>]]></payload>
+        <payload_hash>-336187557</payload_hash>
+        <record_name>ecc_queue</record_name>
+        <reverted_from/>
+        <source>72b5eff775b011108c8b143dd0c59f1d</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-10-31 18:34:19</sys_created_on>
+        <sys_id>7ccc18879732d150d545b18e6253af97</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>1842f52b3a60000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-10-31 18:34:19</sys_updated_on>
+        <type>Cross scope privilege</type>
+        <update_guid>b4cc18870232d1500077f391f93d1197</update_guid>
+        <update_guid_history>b4cc18870232d1500077f391f93d1197:-336187557</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-12-11 19:55:09</sys_created_on>
+        <sys_db_object display_value="" name="sys_scope_privilege">sys_scope_privilege</sys_db_object>
+        <sys_id>61aaded93f7a4224b91925dd63cdf010</sys_id>
+        <sys_metadata>b4cc18879732d150d545b18e6253af96</sys_metadata>
+        <sys_name>ecc_queue</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_scope_delete display_value="">2591fcc8e2534017867aedae352f1461</sys_scope_delete>
+        <sys_update_name>sys_scope_privilege_b4cc18879732d150d545b18e6253af96</sys_update_name>
+        <sys_update_version display_value="sys_scope_privilege_b4cc18879732d150d545b18e6253af96">7ccc18879732d150d545b18e6253af97</sys_update_version>
+    </sys_metadata_delete>
+</record_update>

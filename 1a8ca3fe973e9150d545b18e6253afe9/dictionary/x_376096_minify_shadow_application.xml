@@ -2,6 +2,7 @@
     <element db_object_id="e2322068970f1950d545b18e6253af45" label="Shadow Application" max_length="40" name="x_376096_minify_shadow_application" type="collection">
         <element label="App" max_length="32" name="app" reference="sys_app" type="reference"/>
         <element display="true" label="Name" max_length="120" name="name" type="string"/>
+        <element label="Queue ID" max_length="40" name="queue_id" type="string"/>
         <index name="index">
             <element name="app"/>
         </index>

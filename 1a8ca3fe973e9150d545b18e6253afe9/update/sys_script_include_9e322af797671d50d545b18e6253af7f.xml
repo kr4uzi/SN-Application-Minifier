@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_376096_minify.MinifyQueue</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>MinifyQueue</name>
+        <script><![CDATA[/* global global, gs, sn_scoped_cache, x_376096_minify */
+/* global Class, GlideRecord, GlideAggregate, GlideScriptedExtensionPoint, GlideScopedEvaluator */
+/* global Set, Map */
+/* eslint no-undef: "error" */
+var MinifyQueue = Class.create();
+MinifyQueue.prototype = {
+    initialize: function() {
+		this.minify_capability_name = gs.getProperty('x_376096_minify.midserver.minify_capability_name');
+		
+		// <table> to <extension> cache
+		this.ext_cache = {};
+    },
+	
+	processQueue: function (queueGr) {
+		var queueItemGr = new GlideRecord('x_376096_minify_queue_item');
+		queueItemGr.addQuery('queue', queueGr.sys_id);
+		queueItemGr.addQuery('state', 'waiting');
+		queueItemGr.orderBy('order');
+		queueItemGr.setLimit(1);
+		queueItemGr.query();
+		if (queueItemGr.next()) {
+			const itemResult = this.processItem(queueItemGr, queueGr);
+			if (itemResult.status == 'processed') {
+				queueGr.finished_count++;
+				
+				if (queueGr.finished_count == queueGr.item_count) {
+					this.writebackRecords(queueGr);
+					queueGr.state = 'processed';
+					queueGr.update();
+				} else {
+					queueGr.state = 'procesing';
+					queueGr.update();
+					
+					this.processQueue(queueGr);
+				}
+			} else if (itemResult.status == 'processing') {
+				// async processing (takes care of calling next processQueue itself)
+				queueGr.state = 'processing';
+				queueGr.update();
+			} else if (itemResult.status == 'error') {
+				if (queueGr.error_message && itemResult.message) {
+					queueGr.error_message += '\n';
+				}
+				
+				queueGr.error_message += itemResult.message;
+				queueGr.state = 'error';
+				queueGr.update();
+			}
+		}
+	},
+	
+	processItem: function (queueItemGr, queueGr) {
+		let result = {
+			status: 'error',
+			message: ''
+		};
+		
+		try {
+			let recordGr = queueItemGr.reference_sys_id.getRefRecord();
+			let stepGr = queueItemGr.step.getRefRecord();
+			let field = stepGr.field.toString();
+			this._setTemporaryValuesFromPreviousResults(recordGr, queueGr);
+
+			const action = stepGr.action.toString();
+			if (action == 'js_minify') {
+				queueForJSMinify.call(this, queueItemGr.getUniqueValue(), recordGr[field].toString());
+				result.status = 'processing';
+			} else if (action == 'add_license') {
+				const license = stepGr.license.getRefRecord();
+				if (license.isValidRecord()) {
+					queueItemGr.result = license.license.toString() + '\n' + recordGr[field].toString();
+					queueItemGr.state = 'processed';
+					queueItemGr.update();
+					result.status = 'processed';
+				} else {
+					throw new Error(gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record'));
+				}
+			} else if (action == 'custom') {
+				let gse = new GlideScopedEvaluator();
+				gse.putVariable('record', recordGr);
+				gse.putVariable('step', stepGr);
+				gse.putVariable('item', queueItemGr);
+				let res = gse.evaluateScript(stepGr, 'script');
+				if (res == null) {
+					throw new Error('Error executing script (check log)');
+				} else if (res) {
+					queueItemGr.result = res;
+					queueItemGr.state = 'processed';
+					queueItemGr.update();
+					
+					result.status = 'processed';
+				}
+			}
+		} catch (e) {
+			let errorMessage = e.message;
+			if (e.stack) {
+				errorMessage += '\n' + e.stack;
+			}
+
+			queueItemGr.state = 'error';
+			queueItemGr.error_message = errorMessage;
+			queueItemGr.update();
+			
+			result.status = 'error';
+			result.message = errorMessage;
+		}
+		
+		return result;
+		
+		function queueForJSMinify(queueItemSysID, sourceCode) {
+			const midServer = this._getMidServer(this.minify_capability_name);
+			if (midServer) {
+				let wsUtil = new x_376096_minify.WSUtil(midServer);
+				const eccQueueSysID = wsUtil.execScript(
+					// mid server script
+					'jsMinify.js',
+					// probe parameters
+					{
+						source_code: sourceCode
+					},
+					// callback parameters
+					{
+						script_include: 'MinifyQueue::_jsMinifyCallback',
+						arguments: [queueItemSysID]
+					}
+				);
+
+				if (eccQueueSysID) {
+					return eccQueueSysID;
+				} 
+				
+				throw new Error(gs.getMessage('x_376096_minify_midserver_ecc_insert_failed'));
+			}
+			
+			throw new Error(gs.getMessage('x_376096_minify_no_midserver_available'));
+		}
+	},
+	
+	_jsMinifyCallback: function (queueItemSysID, _result) {
+		const logPrefix = '[MinifyQueue][_jsMinifyCallback][queueItemSysID=' + queueItemSysID + ', result=' + _result + ']\n';
+		if (_result) {
+			let queueItemGr = new GlideRecord('x_376096_minify_queue_item');
+			queueItemGr.addQuery('sys_id', queueItemSysID);
+			queueItemGr.setLimit(1);
+			queueItemGr.query();
+			if (queueItemGr.next()) {
+				let queueGr = queueItemGr.queue.getRefRecord();
+				
+				try {
+					const result = JSON.parse(_result);
+					if (result.minified) {
+						queueItemGr.result = result.minified;
+						queueItemGr.state = 'processed';
+						queueItemGr.update();
+						
+						queueGr.finished_count++;
+						queueGr.update();
+						this.processQueue(queueGr);
+					} else if (result.error) {
+						throw new Error(result.error);
+					} else {
+						throw new Error('Unexpected result (neither minified nor error present): ' + _result);
+					}
+				} catch (e) {
+					var errorMessage = e.message;
+					if (e.stack) {
+						errorMessage += '\n' + e.stack;
+					}
+					
+					gs.error(logPrefix + gs.getMessage('x_376096_minify_midserver_failed_to_minify') + '\n' + errorMessage);
+					
+					queueItemGr.error_message = errorMessage;
+					queueItemGr.state = 'error';
+					queueItemGr.update();
+					
+					queueGr.error_message = errorMessage;
+					queueGr.state = 'error';
+					queueGr.update();
+				}
+			} else {
+				gs.error(logPrefix + gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record'));
+			}
+		} else {
+			gs.error(logPrefix + gs.getMessage('x_376096_minify_midserver_failed_to_minify'));
+		}
+	},
+	
+	writebackRecords: function (queueGr) {
+		var result = {
+			status: 'error',
+			message: ''
+		};
+		
+		let queueItemGa = new GlideAggregate('x_376096_minify_queue_item');
+		queueItemGa.addQuery('queue', queueGr.sys_id);
+		queueItemGa.groupBy('reference_table');
+		queueItemGa.groupBy('reference_sys_id');
+		queueItemGa.query();
+		let records = {};
+		while (queueItemGa.next()) {
+			const table = queueItemGa.getValue('reference_table');
+			const sysID = queueItemGa.getValue('reference_sys_id');
+			if (table && sysID) {
+				(records[table] || (records[table] = [])).push(sysID);
+			}
+		}
+
+		for (const [table, sysIDs] of Object.entries(records)) {
+			try {
+				const extensionPoint = this.getExtensionPoint(table);
+				let recordGr = extensionPoint.queryRecords(table, 'sys_idIN' + sysIDs);
+				while (recordGr.next()) {
+					let shadowRecord = createShadowRecord(table, recordGr.getUniqueValue());
+					this._getMinifiedFields(table).forEach(function (field) {
+						saveShadowField(shadowRecord, table, field, recordGr.getValue(field));
+					});
+					
+					this._setTemporaryValuesFromPreviousResults(recordGr, queueGr);
+					extensionPoint.writeBackRecord(recordGr);
+				}
+				
+				result.status = 'success';
+			} catch (e) {
+				let errorMessage = e.message;
+				if (e.stack) {
+					errorMessage += '\n' + e.stack;
+				}
+
+				result.status = 'error';
+				result.message += errorMessage;
+			}
+		}
+		
+		return result;
+		
+		function createShadowRecord(recordTable, recordSysID, shadowAppSysID) {
+			let shadowRecordGr = new GlideRecord('x_376096_minify_shadow_record');
+			shadowRecordGr.newRecord();
+			shadowRecordGr.reference_table = recordTable;
+			shadowRecordGr.reference_sys_id = recordSysID;
+			if (shadowAppSysID) {
+				shadowRecordGr.shadow_app = shadowAppSysID;
+			}
+			
+			const shadowRecordSysID = shadowRecordGr.insert();
+			if (shadowRecordSysID) {
+				return shadowRecordSysID;
+			}
+			
+			throw new Error(gs.getMessage('x_376096_minify_shadow_record_insert_failed'));
+		}
+		
+		function saveShadowField(shadowRecordSysID, table, field, value) {
+			let shadowFieldGr = new GlideRecord('x_376096_minify_shadow_field');
+			shadowFieldGr.newRecord();
+			shadowFieldGr.shadow_record = shadowRecordSysID;
+			shadowFieldGr.table = table;
+			shadowFieldGr.field = field;
+			shadowFieldGr.value = value;
+			const shadowFieldSysID = shadowFieldGr.insert();
+			if (shadowFieldSysID) {
+				return shadowFieldSysID;
+			}
+			
+			throw new Error(gs.getMessage('x_376096_minify_shadow_record_insert_failed'));
+		}
+	},
+	
+	enqueueRecord: function (metadataGr, queueGr) {
+		let result = {
+			status: 'error',
+			message: ''
+		};
+
+		const recordTable = metadataGr.getRecordClassName();
+		const recordSysID = metadataGr.getUniqueValue();
+
+		try {
+			const extensionPoint = this.getExtensionPoint(recordTable);
+			let recordGr = extensionPoint.queryRecords(recordTable, 'sys_id=' + recordSysID, 1);
+			if (recordGr.next()) {
+				const queueItems = this.getSteps(recordTable).map(function (step) {
+					let queueItemGr = new GlideRecord('x_376096_minify_queue_item');
+					queueItemGr.initialize();
+					queueItemGr.reference_table = recordTable;
+					queueItemGr.reference_sys_id = recordSysID;
+					queueItemGr.step = step.sys_id;
+					queueItemGr.queue = queueGr.sys_id;
+					queueItemGr.order = queueGr.item_count++;
+					return queueItemGr.insert();
+				});
+
+				result.items = queueItems;
+				result.status = 'success';
+			} else {
+				result.error = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
+			}
+		} catch (e) {
+			let errorMessage = e.message;
+			if (e.stack) {
+				errorMessage += '\n' + e.stack;
+			}
+			
+			result.status = 'error';
+			result.message += errorMessage;
+			gs.error('[Minify][enqueueRecord][metadata=' + metadataGr.sys_id + ']' + errorMessage);
+		}
+
+		return result;
+	},
+	
+	enqueueApp: function (appGr) {
+		let result = {
+			status: 'error',
+			message: ''
+		};
+
+		let appSysID = appGr.getUniqueValue();
+		let queueGr = new GlideRecord('x_376096_minify_queue');	
+		queueGr.newRecord();
+		queueGr.target_table = appGr.getRecordClassName();
+		queueGr.target_sys_id = appSysID;
+		const queueSysID = queueGr.insert();
+		if (queueSysID) {
+			try {
+				let queueItems = [];						
+				for (const [table, config] of this.getMinifyTargetMap(appGr)) {
+					let recordGr = config.util.queryRecords(table, config.query);
+					while (recordGr.next()) {
+						const queueResult = this.enqueueRecord(recordGr, queueGr);
+						if (queueResult.status == 'success') {
+							queueItems = queueItems.concat(queueResult.items);
+						} else {
+							throw new Error(queueResult.message);
+						}
+					}
+				}
+
+				if (queueItems.length) {
+					var queueItemGr = new GlideRecord('x_376096_minify_queue_item');
+					queueItemGr.addQuery('queue', queueGr.sys_id);
+					queueItemGr.query();
+					while (queueItemGr.next()) {
+						queueItemGr.state = 'waiting';
+						queueItemGr.update();
+					}
+					
+					queueGr.update();
+					
+					result.queue = {
+						sys_id: queueSysID,
+						items: queueItems
+					};
+
+					result.status = 'success';
+				} else {
+					queueGr.get(queueGr.getUniqueValue());
+					queueGr.deleteRecord();
+					result.error = 'No items to minify!';
+				}
+			} catch (e) {
+				queueGr.get(queueGr.getUniqueValue());
+				queueGr.deleteRecord();
+
+				let errorMessage = e.message;
+				if (e.stack) {
+					errorMessage += '\n' + e.stack;
+				}
+				
+				result.status = 'error';
+				result.message = errorMessage;
+				gs.error('[Minify][enqueueApp][app=' + appGr.sys_id + '] Failed to enqueue app: ' + errorMessage);
+			}
+		} else {
+			result.message = 'unable to create queue';
+		}
+
+		return result;
+	},
+	
+	getMinifyTargetMap: function (appGr) {
+		let targetMap = new Map();
+		let targetGr = new GlideRecord('x_376096_minify_target');
+		targetGr.addQuery('active', true);
+		targetGr.query();
+		while (targetGr.next()) {
+			const tableName = targetGr.table.toString();
+			let conditions = targetGr.conditions.toString()
+				.replace(/\^EQ$/, '')
+				.split('^NQ') // filter the records by the current app
+				.map(function(condition) {
+					let appCondition = 'sys_scope=' + appGr.sys_id;
+					if (condition) {
+						appCondition += '^' + condition;
+					}
+					
+					return appCondition;					
+				})
+				.join('^NQ');
+
+			targetMap.set(tableName, {
+				util: this.getExtensionPoint(tableName),
+				query: conditions
+			});
+		}
+
+		return targetMap;
+	},
+	
+	_getMinifiedFields: function (table) {
+		let fields = [...new Set(this.getSteps(table).map(s => s.field))];
+		return fields;
+	},
+	
+	_setTemporaryValuesFromPreviousResults: function(recordGr, queueGr) {
+		const recordTable = recordGr.getRecordClassName();
+		const extensionPoint = this.getExtensionPoint(recordGr.getRecordClassName());
+		this._getMinifiedFields(recordTable).forEach(function (field) {
+			let queueItemGr = new GlideRecord('x_376096_minify_queue_item');
+			queueItemGr.addQuery('queue', queueGr.sys_id);
+			queueItemGr.addQuery('state', 'processed');
+			queueItemGr.orderByDesc('order');
+			queueItemGr.setLimit(1);
+			queueItemGr.query();
+			if (queueItemGr.next()) {
+				extensionPoint.setRecordField(recordGr, field, queueItemGr.result.toString());
+			}
+		});
+	},
+	
+	getExtensionPoint: function(recordTable) {
+		if (recordTable in this.ext_cache) {
+			return this.ext_cache[recordTable];
+		}
+		
+		const extensionPoints = new GlideScriptedExtensionPoint().getExtensions('AppMinifyUtil');
+		for (let i = 0, length = extensionPoints.length; i < length; i++) {
+			let extensionPoint = extensionPoints[i];
+			if (extensionPoint.handles(recordTable)) {
+				this.ext_cache[recordTable] = extensionPoint;
+				return extensionPoint;
+			}
+		}
+
+		throw new Error(gs.getMessage('x_376096_minify_no_extension_point_available'));
+	},
+	
+	getSteps: function (table) {
+		let steps = sn_scoped_cache.ScopedCacheManager.get('x_376096_minify_steps', table);
+		if (steps) {
+			steps = JSON.parse(steps);
+		} else {
+			steps = [];
+			
+			let stepGr = new GlideRecord('x_376096_minify_step');
+			stepGr.addQuery('active', true);
+			stepGr.addQuery('table', table);
+			stepGr.orderBy('order');
+			stepGr.query();
+			while (stepGr.next()) {				
+				steps.push({
+					sys_id: stepGr.getUniqueValue(),
+					field: stepGr.getValue('field')
+				});
+			}
+			
+			sn_scoped_cache.ScopedCacheManager.put('x_376096_minify_steps', table, JSON.stringify(steps));
+		}
+		
+		return steps;
+	},
+	
+	_getMidServer: function(capability) {
+		let midFinder = new global.MIDServerFinder();
+		midFinder.setCapabilities(['JSMinify']);
+		const midServers = midFinder.getMIDServers();
+		if (midServers.length == 0) {
+			return null;
+		}
+
+		return midServers[0];
+	},
+
+    type: 'MinifyQueue'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-12-10 19:01:27</sys_created_on>
+        <sys_id>9e322af797671d50d545b18e6253af7f</sys_id>
+        <sys_name>MinifyQueue</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_script_include_9e322af797671d50d545b18e6253af7f</sys_update_name>
+    </sys_script_include>
+</record_update>

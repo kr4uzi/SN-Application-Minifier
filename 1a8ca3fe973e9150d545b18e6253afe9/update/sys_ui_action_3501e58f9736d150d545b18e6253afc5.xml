@@ -26,41 +26,17 @@
         <list_link>false</list_link>
         <list_save_with_form_button>false</list_save_with_form_button>
         <list_style/>
-        <messages/>
+        <messages>x_376096_minify_app_minify_title</messages>
         <name>Minify App</name>
-        <onclick>x_376096_minify_showPreview()</onclick>
-        <order>100</order>
-        <script><![CDATA[function x_376096_minify_showPreview() {
+        <onclick>x_376096_minify_minifyApp()</onclick>
+        <order>9100</order>
+        <script><![CDATA[function x_376096_minify_minifyApp() {
 	var appSysID = g_form.getUniqueValue();
 
-	getMessage('x_376096_minify_confirm_app_minify_title', function (title) {
-		var gm = new GlideModal('x_376096_minify_confirm_minify_app');
+	getMessage('x_376096_minify_app_minify_title', function (title) {
+		var gm = new GlideModal('x_376096_minify_minify_app');
 		gm.setTitle(title.withValues([g_form.getValue('name')]));
-		gm.setPreference('app_sys_id', appSysID);
-		gm.setPreference('onSubmit', function () {
-			var ga = new GlideAjax('x_376096_minify.MinifyClient');
-			ga.addParam('sysparm_name', 'minifyApp');
-			ga.addParam('app_sys_id', appSysID);
-			ga.getXMLAnswer(function (answer) {
-				if (answer) {
-					var result = JSON.parse(answer);
-					if (result.status == 'success') {
-						getMessage('x_376096_minify_successfull_minifying', function (msg) {
-							g_form.addInfoMessage(msg);
-						});
-					} else {
-						g_form.addErrorMessage(result.message);
-					}
-				} else {
-					getMessage('x_376096_minify_error_minifying', function (msg) {
-						g_form.addErrorMessage(msg);
-					});
-				}
-			});
-
-			gm.destroy();
-		});
-		
+		gm.setPreference('app_sys_id', appSysID);		
 		gm.render();
 	});
 }]]></script>
@@ -92,6 +68,7 @@ function onClick(g_form) {
 
 }]]></x_376096_pxp_client_script>
         <x_376096_pxp_enabled>false</x_376096_pxp_enabled>
+        <x_376096_pxp_list_disabled_condition/>
         <x_376096_pxp_list_label/>
     </sys_ui_action>
 </record_update>

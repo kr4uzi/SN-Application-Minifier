@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
     <sys_ui_page action="INSERT_OR_UPDATE">
         <category>general</category>
-        <client_script><![CDATA[/* global jslog, addLoadEvent, gel, getMessage, GlideDialogWindow, GlideAjax */
+        <client_script><![CDATA[/* global jslog, addLoadEvent, gel, getMessage, GlideDialogWindow, GlideAjax, window, btoa */
 /* eslint no-undef: "error" */
 addLoadEvent(function() {
 	var loadingElement = gel('x_376096_minify_confirm_loading');
@@ -36,25 +36,120 @@ addLoadEvent(function() {
 	});
 });
 
-function x_376096_minify_confirm_showError(errorMessage) {
-	var errorMessageElement = gel('x_376096_minify_select_application_error_message');
-	errorMessageElement.innerText = errorMessage;
-	errorMessageElement.style.display = '';
+function x_376096_minify_confirm_showError(errorMessage, queueSysID) {	
+	var statusMessageElement = gel('x_376096_minify_select_application_status_message');
+	statusMessageElement.append(errorMessage);
+	
+	if (queueSysID) {
+		var queueLink = window.document.createElement('a');
+		queueLink.setAttribute('href', 'nav_to.do?uri=x_376096_minify_queue.do?sys_id=' + queueSysID);
+		queueLink.setAttribute('target', '_blank');
+		queueLink.append('Link to Queue ➚');
+		statusMessageElement.append(window.document.createElement('br'), queueLink);
+	}
+	
+	statusMessageElement.style.color = 'red';
+	statusMessageElement.style.display = '';
+}
+
+function x_376096_minify_showQueueStatus(queueInfo) {
+	var okButton = gel('x_376096_confirm_ok');
+	var cancelButton = gel('x_376096_confirm_cancel');
+	
+	var statusArea = gel('x_376096_minify_confirm_status');
+	var progressBar = statusArea.querySelector('.progress-bar');
+	progressBar.setAttribute('aria-valuemax', queueInfo.items.length);
+
+	var watcherChannel = getChannelRW('x_376096_minify_queue', 'sys_id=' + queueInfo.sys_id);
+	watcherChannel.subscribe(function(message) {
+		if (message.data.operation == 'update') {
+			if (message.data.changes.indexOf('finished_count') > -1) {
+				var finishedCount = +message.data.record.finished_count.value;
+				progressBar.setAttribute('aria-valuenow', finishedCount);
+				progressBar.style.width = Math.floor(finishedCount / queueInfo.items.length * 100) + '%';
+			}
+		
+			if (message.data.changes.indexOf('state') > -1) {
+				var state = message.data.record.state.value;
+				if (state == 'error') {
+					progressBar.classList.add('progress-bar-danger');
+					if (message.data.changes.indexOf('error_message') > -1) {
+						x_376096_minify_confirm_showError(message.data.record.error_message.value, queueInfo.sys_id);
+					}
+				} else if (state == 'processed') {
+					var statusMessageElement = gel('x_376096_minify_select_application_status_message');
+					statusMessageElement.innerHTML = 'Success';
+					statusMessageElement.style.color = 'green';
+					statusMessageElement.style.display = '';
+				}
+			}
+		}
+	});
+
+	statusArea.style.display = '';
+	
+	var ga = new GlideAjax('x_376096_minify.MinifyClient');
+	ga.addParam('sysparm_name', 'startQueue');
+	ga.addParam('queue_sys_id', queueInfo.sys_id);
+	ga.getXMLAnswer(function (answer) {
+		try {
+			var result = JSON.parse(answer);
+			if (result.status != 'success') {
+				throw new Error(result.message);
+			}
+		} catch (e) {
+			x_376096_minify_confirm_showError(e.message, queueInfo.sys_id);
+		}
+	});
+	
+	function getChannelRW(table, filter) {
+		var ambClient = window.g_ambClient || window.top.g_ambClient;
+		var t = '/rw/default/' + table + '/' + getFilterString(filter);
+		return ambClient.getChannel(t);
+		
+		// the following functions are taken/inspired by the 'amb' service ('ng.amb' module)
+		// source code: /scripts/app.ng.amb/service.AMB.js
+		function getFilterString(filter) {
+			filter = filter.
+				replace(/\^EQ/g, '').
+				replace(/\^ORDERBY(?:DESC)?[^^]*/g, '').
+				replace(/^GOTO/, '');
+			return btoa(unescape(encodeURIComponent(filter))).replace(/=/g, '-');
+		}
+	}
 }
 
 function x_376096_minify_confirm_OK() {
+	var okButton = gel('x_376096_confirm_ok');
+	var cancelButton = gel('x_376096_confirm_cancel');
+	
+	okButton.setAttribute('disabled', '');
+	cancelButton.setAttribute('disabled', '');
+	
 	var gdw = GlideDialogWindow.get();
-	var onSubmit = gdw.getPreference('onSubmit');
-	if (onSubmit && typeof onSubmit == 'function') {
+	var appSysID = gdw.getPreference('app_sys_id');
+	
+	var ga = new GlideAjax('x_376096_minify.MinifyClient');
+	ga.addParam('sysparm_name', 'minifyApp');
+	ga.addParam('app_sys_id', appSysID);
+	ga.getXMLAnswer(function (answer) {
 		try {
-			onSubmit.call(gdw);
+			if (answer) {
+				var result = JSON.parse(answer);
+				if (result.status == 'success') {
+					x_376096_minify_showQueueStatus(result.queue);
+				} else {
+					x_376096_minify_confirm_showError(result.message);
+				}
+			} else {
+				getMessage('x_376096_minify_error_minifying', function (msg) {
+					x_376096_minify_confirm_showError(msg);
+				});
+			}
 		} catch (e) {
-			jslog(e);
-			gdw.destroy();
+			x_376096_minify_confirm_showError(e.message);
 		}
-	} else {
-		gdw.destroy();
-	}
+	});
 }
 
 function x_376096_minify_confirm_Cancel() {
@@ -63,7 +158,7 @@ function x_376096_minify_confirm_Cancel() {
 }]]></client_script>
         <description/>
         <direct>false</direct>
-        <endpoint>x_376096_minify_confirm_minify_app.do</endpoint>
+        <endpoint>x_376096_minify_minify_app.do</endpoint>
         <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
 	<img id="x_376096_minify_confirm_loading" alt="${gs.getMessage('Please Wait')}" src="images/please_wait.gifx" />
@@ -85,16 +180,24 @@ function x_376096_minify_confirm_Cancel() {
 				/>
 			</div>
 		</div>
+		<div class="row" id="x_376096_minify_confirm_status" style="display: none; margin-top: 15px;">
+			<div class="col-md-12">
+				<div class="progress">
+					<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<p id="x_376096_minify_select_application_error_message" stlye="display: none;"></p>
+	<p id="x_376096_minify_select_application_status_message" style="display: none; padding-left: 2rem;"></p>
 </j:jelly>]]></html>
-        <name>confirm_minify_app</name>
+        <name>minify_app</name>
         <processing_script/>
         <sys_class_name>sys_ui_page</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-11-01 07:28:09</sys_created_on>
         <sys_id>61b6cfcf97bad150d545b18e6253af80</sys_id>
-        <sys_name>confirm_minify_app</sys_name>
+        <sys_name>minify_app</sys_name>
         <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
         <sys_policy/>
         <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>

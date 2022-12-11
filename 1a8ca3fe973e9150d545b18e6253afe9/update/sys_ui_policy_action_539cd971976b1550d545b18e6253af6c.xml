@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_policy_action">
+    <sys_ui_policy_action action="INSERT_OR_UPDATE">
+        <cleared>false</cleared>
+        <disabled>ignore</disabled>
+        <field>error_message</field>
+        <mandatory>ignore</mandatory>
+        <sys_class_name>sys_ui_policy_action</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-12-04 08:48:43</sys_created_on>
+        <sys_id>539cd971976b1550d545b18e6253af6c</sys_id>
+        <sys_name>error_message</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_ui_policy_action_539cd971976b1550d545b18e6253af6c</sys_update_name>
+        <table>x_376096_minify_queue_item</table>
+        <ui_policy display_value="AppMinify - Queue Item - Show Error">118c1971976b1550d545b18e6253afe9</ui_policy>
+        <visible>true</visible>
+    </sys_ui_policy_action>
+</record_update>

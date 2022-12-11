@@ -3,14 +3,14 @@
         <application/>
         <code/>
         <commented_message/>
-        <key>x_376096_minify_confirm_app_minify_title</key>
+        <key>x_376096_minify_app_minify_title</key>
         <language>en</language>
         <message>Minify {0}</message>
         <sys_class_name>sys_ui_message</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-11-04 12:02:38</sys_created_on>
         <sys_id>71792704978bd550d545b18e6253afdd</sys_id>
-        <sys_name>x_376096_minify_confirm_app_minify_title</sys_name>
+        <sys_name>x_376096_minify_app_minify_title</sys_name>
         <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
         <sys_policy/>
         <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>

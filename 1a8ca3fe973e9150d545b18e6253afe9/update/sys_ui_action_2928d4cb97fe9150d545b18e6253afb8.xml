@@ -29,7 +29,7 @@
         <messages/>
         <name>Unminify Record</name>
         <onclick>x_376096_minify_unminifyRecord()</onclick>
-        <order>100</order>
+        <order>9100</order>
         <script><![CDATA[/* global GlideAjax, g_form, g_navigation */
 /* eslint no-undef: "error" */
 function x_376096_minify_unminifyRecord() {
@@ -78,6 +78,7 @@ function onClick(g_form) {
 
 }]]></x_376096_pxp_client_script>
         <x_376096_pxp_enabled>false</x_376096_pxp_enabled>
+        <x_376096_pxp_list_disabled_condition/>
         <x_376096_pxp_list_label/>
     </sys_ui_action>
 </record_update>

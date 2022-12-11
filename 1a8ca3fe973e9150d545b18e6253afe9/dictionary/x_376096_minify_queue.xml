@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="7a2cc13697271950d545b18e6253afde" label="Queue" max_length="40" name="x_376096_minify_queue" type="collection">
+        <element label="Error message" max_length="1000" name="error_message" type="string"/>
+        <element default="0" label="Finished count" max_length="40" name="finished_count" type="integer"/>
+        <element default="0" label="Item count" max_length="40" name="item_count" type="integer"/>
+        <element display="true" label="Name" max_length="120" name="name" type="string"/>
+        <element choice="1" default="preparing" label="State" max_length="40" name="state" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Preparing" sequence="10" value="preparing"/>
+                <element inactive_on_update="false" label="Waiting" sequence="20" value="waiting"/>
+                <element inactive_on_update="false" label="Processing" sequence="30" value="processing"/>
+                <element inactive_on_update="false" label="Processed" sequence="40" value="processed"/>
+                <element inactive_on_update="false" label="Error" sequence="50" value="error"/>
+            </choice>
+        </element>
+        <element dependent="target_table" dependent_on_field="target_table" label="Target" max_length="32" name="target_sys_id" type="document_id" use_dependent_field="true"/>
+        <element label="Target table" max_length="80" name="target_table" type="table_name"/>
+    </element>
+</database>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="ff5a15ad976bd150d545b18e6253afb4" label="Queue Item" max_length="40" name="x_376096_minify_queue_item" type="collection">
+        <element label="Error message" max_length="500" name="error_message" type="string"/>
+        <element label="Order" max_length="40" name="order" type="integer"/>
+        <element label="Queue" max_length="32" name="queue" reference="x_376096_minify_queue" reference_cascade_rule="cascade" type="reference"/>
+        <element dependent="reference_table" dependent_on_field="reference_table" label="Reference" max_length="32" name="reference_sys_id" type="document_id" use_dependent_field="true"/>
+        <element label="Table" max_length="80" name="reference_table" type="table_name"/>
+        <element label="Result" max_length="9000" name="result" type="string"/>
+        <element choice="1" default="waiting" label="State" max_length="40" name="state" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Preparing" sequence="0" value="preparing"/>
+                <element inactive_on_update="false" label="Waiting" sequence="10" value="waiting"/>
+                <element inactive_on_update="false" label="Processing" sequence="20" value="processing"/>
+                <element inactive_on_update="false" label="Processed" sequence="30" value="processed"/>
+                <element inactive_on_update="false" label="Error" sequence="40" value="error"/>
+            </choice>
+        </element>
+        <element label="Step" max_length="32" name="step" reference="x_376096_minify_step" type="reference"/>
+        <index name="index">
+            <element name="queue"/>
+        </index>
+        <index name="index2">
+            <element name="reference_sys_id"/>
+        </index>
+        <index name="index3">
+            <element name="step"/>
+        </index>
+    </element>
+</database>

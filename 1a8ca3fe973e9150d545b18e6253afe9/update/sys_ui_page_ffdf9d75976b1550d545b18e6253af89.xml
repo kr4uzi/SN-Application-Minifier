@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script><![CDATA[/* global addLoadEvent, gel, window, btoa */
+/* eslint no-undef: "error" */
+addLoadEvent(function () {
+	var status = JSON.parse('$[jvar_status]');
+	var progressBar = gel('minify-progress-bar');
+	progressBar.style.width = Math.floor(status.done / status.items * 100) + '%';
+	
+	var watcherChannel = getChannelRW('x_376096_minify_queue_item', status.query);
+	watcherChannel.subscribe(function(message) {
+		if (message.data.operation == 'update') {
+			if (message.data.changes.indexOf('state') > -1) {
+				var state = message.data.record.state.value;
+				if (state == 'error' || state == 'processed') {
+					status.done++;
+					
+					progressBar.setAttribute('aria-valuenow', status.done);
+					progressBar.style.width = Math.floor(status.done / status.items * 100) + '%';
+				}
+			}
+		}
+	});
+
+	function getChannelRW(table, filter) {
+		var ambClient = window.g_ambClient || window.top.g_ambClient;
+		var t = '/rw/default/' + table + '/' + getFilterString(filter);
+		return ambClient.getChannel(t);
+		
+		// the following functions are taken/inspired by the 'amb' service ('ng.amb' module)
+		// source code: /scripts/app.ng.amb/service.AMB.js
+		function getFilterString(filter) {
+			filter = filter.
+				replace(/\^EQ/g, '').
+				replace(/\^ORDERBY(?:DESC)?[^^]*/g, '').
+				replace(/^GOTO/, '');
+			return btoa(unescape(encodeURIComponent(filter))).replace(/=/g, '-');
+		}
+	}
+});]]></client_script>
+        <description/>
+        <direct>false</direct>
+        <endpoint>x_376096_minify_minify_status.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	<g2:evaluate>
+		var queueID = RP.getParameterValue('queue_id');
+		var referenceTable = RP.getParameterValue('reference_table');
+		var referenceSysID = RP.getParameterValue('reference_sys_id');
+		
+		var queueItemGa = new GlideAggregate('x_376096_minify_queue_item');
+		queueItemGa.addQuery('queue_id', queueID);
+		
+		if (referenceTable $[AND] referenceSysID) {
+			queueItemGa.addQuery('reference_table', referenceTable);
+			queueItemGa.addQuery('reference_sys_id', referenceSysID);
+		}
+		
+		queueItemGa.groupBy('state');
+		queueItemGa.addAggregate('COUNT');
+		queueItemGa.query();
+		
+		var status = {
+			'query': queueItemGa.getEncodedQuery(),
+			'items': 0,
+			'done': 0
+		};
+
+		while (queueItemGa.next()) {
+			const state = queueItemGa.getValue('state');
+			const count = +queueItemGa.getAggregate('COUNT');
+			status.items += count;
+		
+			if (state == 'error' || state == 'processed') {
+				status.done += count;
+			}
+		}
+	</g2:evaluate>
+	<j2:set var="jvar_status" value="$[JSON.stringify(status)]" />
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="progress">
+					<div id="minify-progress-bar" class="progress-bar" role="progressbar" style="width: $[Math.floor(status.done / status.items * 100)]%" aria-valuemin="0" aria-valuemax="$[status.items]" aria-valuenow="$[status.done]">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</j:jelly>]]></html>
+        <name>minify_status</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-12-04 09:02:24</sys_created_on>
+        <sys_id>ffdf9d75976b1550d545b18e6253af89</sys_id>
+        <sys_name>minify_status</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_ui_page_ffdf9d75976b1550d545b18e6253af89</sys_update_name>
+    </sys_ui_page>
+</record_update>

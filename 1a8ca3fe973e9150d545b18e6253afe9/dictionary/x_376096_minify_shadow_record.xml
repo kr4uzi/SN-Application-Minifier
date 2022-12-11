@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
     <element db_object_id="0c722428970f1950d545b18e6253afab" label="Shadow Record" max_length="40" name="x_376096_minify_shadow_record" type="collection">
+        <element calculation="(function calculatedFieldValue(current) {&#13;&#10;&#13;&#10;&#9;return current.reference_sys_id.sys_scope;&#13;&#10;&#9;&#13;&#10;})(current);" label="Application" max_length="32" name="application" reference="sys_scope" type="reference" virtual="true"/>
         <element display="true" label="Name" max_length="120" name="name" type="string"/>
         <element dependent="reference_table" dependent_on_field="reference_table" label="Reference" max_length="32" name="reference_sys_id" reference_cascade_rule="cascade" type="document_id" use_dependent_field="true"/>
         <element label="Table" max_length="80" name="reference_table" type="table_name"/>
         <element label="Shadow App" max_length="32" name="shadow_app" reference="x_376096_minify_shadow_application" type="reference"/>
         <index name="index">
-            <element name="reference_sys_id"/>
+            <element name="application"/>
         </index>
         <index name="index2">
+            <element name="reference_sys_id"/>
+        </index>
+        <index name="index3">
             <element name="shadow_app"/>
         </index>
     </element>

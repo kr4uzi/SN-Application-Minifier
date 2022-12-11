@@ -48,7 +48,11 @@ WSUtil.prototype = {
 		if (callback.script_include) {
 			var parts = callback.script_include.split('::');
 			if (parts[0] == 'Minify') {
-				var si = new x_376096_minify.Minify();
+				let si = new x_376096_minify.Minify();
+				callback.arguments.push(result);
+				si[parts[1]].apply(si, callback.arguments);
+			} else if (parts[0] == 'MinifyQueue') {
+				let si = new x_376096_minify.MinifyQueue();
 				callback.arguments.push(result);
 				si[parts[1]].apply(si, callback.arguments);
 			}

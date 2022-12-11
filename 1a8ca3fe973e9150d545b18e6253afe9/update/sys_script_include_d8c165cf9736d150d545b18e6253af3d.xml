@@ -29,6 +29,39 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 		}
 	},
 	
+	startQueue: function () {
+		var result = {
+			'status': 'error',
+			'message': ''
+		};
+		
+		try {
+			const queueSysID = this.getParameter('queue_sys_id');
+			if (queueSysID) {
+				let queueGr = new GlideRecordSecure('x_376096_minify_queue');
+				queueGr.addQuery('sys_id', queueSysID);
+				queueGr.setLimit(1);
+				queueGr.query();
+				if (queueGr.next()) {
+					this.minify.startQueue(queueGr);
+					result.status = 'success';
+				} else {
+					result.message = gs.getMessage('x_376096_minify_record_unauthorized_or_invalid_record');
+				}
+			} else {
+				result.message = gs.getMessage('x_376096_minify_invalid_parameters');
+			}
+		} catch (e) {
+			result.status = 'error';
+			result.message = e.message;
+			if (e.stack) {
+				result.message += '\n' + e.stack;
+			}
+		}
+		
+		return JSON.stringify(result);
+	},
+	
 	unminifyRecord: function () {
 		var result = {
 			'status': 'error',
@@ -39,9 +72,9 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 			var recordTable = this.getParameter('record_table');
 			var recordSysID = this.getParameter('record_sys_id');
 			if (recordTable && recordSysID) {
-				var recordUtil = this.minify._getRecordUtil(recordTable);
-				if (recordUtil) {
-					var recordGr = recordUtil.queryRecords(recordTable, 'sys_id=' + recordSysID, 1);
+				var extensionPoint = this.minify.getExtensionPoint(recordTable);
+				if (extensionPoint) {
+					var recordGr = extensionPoint.queryRecords(recordTable, 'sys_id=' + recordSysID, 1);
 					if (recordGr.next()) {
 						if (recordGr.canWrite()) {
 							result = this.minify.unminifyRecord(recordGr);
@@ -78,9 +111,9 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 			var recordTable = this.getParameter('record_table');
 			var recordSysID = this.getParameter('record_sys_id');
 			if (recordTable && recordSysID) {
-				var recordUtil = this.minify._getRecordUtil(recordTable);
-				if (recordUtil) {
-					var recordGr = recordUtil.queryRecord(recordTable, 'sys_id=' + recordSysID);
+				var extensionPoint = this.minify.getExtensionPoint(recordTable);
+				if (extensionPoint) {
+					var recordGr = extensionPoint.queryRecord(recordTable, 'sys_id=' + recordSysID);
 					if (recordGr.next()) {
 						if (recordGr.canWrite()) {
 							var previewOnly = false;
@@ -127,9 +160,7 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 						var minifyResult = this.minify.minifyApp(appGr, previewOnly);
 						if (minifyResult.status == 'success') {
 							result.status = 'success';
-							result.queue = {
-								count: minifyResult.queue.length
-							};
+							result.queue = minifyResult.queue;
 						} else {
 							result.message = minifyResult.message;
 						}
@@ -166,12 +197,11 @@ MinifyClient.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 			appGr.setLimit(1);
 			appGr.query();
 			if (appGr.next()) {
-				var previewOnly = true;
-				var previewResult = this.minify.minifyApp(appGr, previewOnly);
+				var previewResult = this.minify.previewMinifyApp(appGr);
 				if (previewResult.status == 'success') {
 					result.status = 'success';
 					result.preview = {
-						count: previewResult.queue.length
+						count: previewResult.count
 					};
 				} else {
 					result.message = previewResult.message;

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_scoped_cache">
+    <sys_scoped_cache action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <cache_name>x_376096_minify_steps</cache_name>
+        <cache_name_with_scope>x_376096_minify_steps.x_376096_minify</cache_name_with_scope>
+        <max_entries>100</max_entries>
+        <sys_class_name>sys_scoped_cache</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-12-03 14:28:46</sys_created_on>
+        <sys_id>f2f06de197abd150d545b18e6253afde</sys_id>
+        <sys_name>x_376096_minify_steps</sys_name>
+        <sys_package display_value="Application Minifier" source="x_376096_minify">1a8ca3fe973e9150d545b18e6253afe9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Application Minifier">1a8ca3fe973e9150d545b18e6253afe9</sys_scope>
+        <sys_update_name>sys_scoped_cache_f2f06de197abd150d545b18e6253afde</sys_update_name>
+    </sys_scoped_cache>
+</record_update>

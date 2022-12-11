@@ -27,6 +27,10 @@ AppMinifyUtil.prototype = {
 		
 		return recordGr;
 	},
+	
+	writeBackRecord: function (recordGr) {
+		recordGr.update();
+	},
 
     updateRecord: function (table, sys_id, field, value) {
 		// This method must be overwritten in the global scope in order to allow Minify App to 
@@ -46,6 +50,18 @@ AppMinifyUtil.prototype = {
 				recordGr.update();
 			}
 		}
+	},
+	
+	/**
+	 * This method is used to set a temporary value on a record once it has been determined
+	 * that this Extension Point is suitable (by handlesTable).
+	 *
+	 * @param {GlideRecord} anyGr
+	 * @param {string} fieldName
+	 * @param {string} fieldValue
+	 */
+	setRecordField: function (anyGr, fieldName, fieldValue) {
+		anyGr[fieldName] = fieldValue;
 	},
 
     type: 'AppMinifyUtil'
